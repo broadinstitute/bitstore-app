@@ -77,7 +77,7 @@ class BITStore(object):
         if self.debug:
             credentials = AppAssertionCredentials(self.scopes)
             access_token = credentials.get_access_token().access_token
-            prin('Access Token: %s' % (access_token))
+            print('Access Token: %s' % (access_token))
 
         # build the discovery_url
         discovery_url = '%s/discovery/v1/apis/%s/%s/rest' % (
