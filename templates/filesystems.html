@@ -16,7 +16,7 @@
         </tr>
             {% for f in servers[s] %}
             <tr>
-                <td><a href="/filesystems/{{ f.id }}" {% if not f.quote %}class="text-danger"{% endif %}>{{ f.fs }}</a></td>
+                <td><a href="/admin/filesystems/{{ f.id }}" {% if not f.quote %}class="text-danger"{% endif %}>{{ f.fs }}</a></td>
                 <td>{% if f.mountpoints %}{{f.mountpoints[0].mountpoint }}{% endif %}</td>
             </tr>
             {% endfor %}

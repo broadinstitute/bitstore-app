@@ -1,0 +1,15 @@
+    dataset_ref = b.bigquery.Client().dataset('broad_bitstore_app', project='broad-bitstore-app')
+    table_ref = dataset_ref.table('bits_billing_byfs_bitstore_historical')
+    table = b.bigquery.Client().get_table(table_ref)
+    # Load all rows from a table
+    rows = b.bigquery.Client().list_rows(table)
+    assert len(list(rows)) == table.num_rows
+
+    # Load the first 10 rows
+    rows = b.bigquery.Client().list_rows(table, max_results=10)
+    assert len(list(rows)) == 10
+
+    rows = b.bigquery.Client().list_rows(table, start_index=10, max_results=10)
+    
+    for row in rows:
+        print(row)

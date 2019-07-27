@@ -35,10 +35,10 @@ class BITStore(object):
 
     def __init__(
         self,
-        api='bitstore',
+        api='bitstore-dev',
         api_version='v1',
         api_key=None,
-        base_url='https://broad-bitstore-api.appspot.com/_ah/api',
+        base_url='https://broad-bitstore-api-dev.appspot.com/_ah/api',
         memcache_time=3600,
         debug=False,
     ):
@@ -185,6 +185,7 @@ class BITStore(object):
     def get_paged_list(self, request, params={}):
         """Return a list of all items from a request."""
         response = request.list().execute()
+        #print("response!!!", response)
         if not response:
             return []
         items = response.get('items', [])
@@ -231,6 +232,7 @@ class BITStore(object):
             name = item[key]
 
             # put item into the appropriate bucket
+            #print(name[0])
             bucket = name[0]
             if bucket not in buckets:
                 buckets[bucket] = [item]
