@@ -7,8 +7,15 @@ import webapp2
 
 from bitstoreapiclient import BITStore
 from google.appengine.api import users
+import google.auth
 
+<<<<<<< HEAD
 from config import api, api_key, base_url, debug
+=======
+from bitstoreapiclient import BITStore
+>>>>>>> d583f59... Get dev working
+from bigquery import BigQuery
+
 
 jinja = jinja2.Environment(
     loader=jinja2.FileSystemLoader('templates'),
@@ -16,10 +23,16 @@ jinja = jinja2.Environment(
     autoescape=True)
 
 PARAMS = {
+<<<<<<< HEAD
     'api': api,
     'api_key': api_key,
     'base_url': base_url,
     'debug': debug,
+=======
+    'api_key': 'AIzaSyDuZUxMX3SkIQZNTOW_25jTsZMbDstie2Y',
+    # 'base_url': 'http://karlsson.c.broad-karlsson.internal:8081/_ah/api',
+    'debug': True,
+>>>>>>> d583f59... Get dev working
 }
 
 
@@ -121,7 +134,7 @@ class FilesystemEditPage(webapp2.RequestHandler):
             response = b.bitstore.filesystems().insert(body=filesystem).execute()
             # print(response)
 
-        self.redirect('/filesystems/%s' % (filesystem_id))
+        self.redirect('/admin/filesystems/%s' % (filesystem_id))
 
 
 class FilesystemPage(webapp2.RequestHandler):
@@ -144,8 +157,108 @@ class FilesystemPage(webapp2.RequestHandler):
         self.response.write(output)
 
 
-class MainPage(webapp2.RequestHandler):
-    """Class for MainPage."""
+class QuoteIndex(webapp2.RequestHandler):
+    """Class for QuoteIndex page."""
+
+    def get(self):
+        """Return the quote page."""
+        b = BITStore(**PARAMS)
+        filesystems = b.get_filesystems()
+
+        credentials, project_id = google.auth.default()
+        print("My creds:", credentials.signer_email)
+        #bq = BigQuery(project_id, credentials)
+        bq = BigQuery('broad-bitstore-app', credentials)
+        query = 'select * from broad_bitstore_app.bits_billing_byfs_bitstore_historical where datetime = (select max(datetime) from broad_bitstore_app.bits_billing_byfs_bitstore_historical)'
+        query_results = bq.bq_query(query)
+        table_list = bq.assemble_query_result_list(query_results)
+
+        # Make the list of dicts into a dict of dicts with fs value as key
+        by_fs = {}
+        for bq_row in table_list:
+            by_fs[bq_row['fs']] = bq_row
+
+        #quotes = {}
+        #for fs, fs_value in by_fs.items():
+        #    if fs_value['quote'] in quotes:
+        #        quotes[fs_value['quote']][fs] = fs_value
+        #    else:
+        #        quotes[fs_value['quote']] = {fs: fs_value}
+
+        quotes = {}
+        for f in by_fs:
+            fs_row = by_fs[f]
+            quote = fs_row['quote']
+            if quote in quotes:
+                quotes[quote].append(fs_row)
+            else:
+                quotes[quote] = [fs_row]
+
+        template_values = {
+            'filesystems': filesystems,
+            'by_fs': by_fs,
+            'quotes_dict': quotes
+            }
+
+        template = jinja.get_template('quoteindex.html')
+        body = template.render(template_values)
+
+        output = render_theme(body, self.request)
+        self.response.write(output)
+
+
+class QuoteIndex(webapp2.RequestHandler):
+    """Class for QuoteIndex page."""
+
+    def get(self):
+        """Return the quote page."""
+        b = BITStore(**PARAMS)
+        filesystems = b.get_filesystems()
+
+        credentials, project_id = google.auth.default()
+        print("My creds:", credentials.signer_email)
+        #bq = BigQuery(project_id, credentials)
+        bq = BigQuery('broad-bitstore-app', credentials)
+        query = 'select * from broad_bitstore_app.bits_billing_byfs_bitstore_historical where datetime = (select max(datetime) from broad_bitstore_app.bits_billing_byfs_bitstore_historical)'
+        query_results = bq.bq_query(query)
+        table_list = bq.assemble_query_result_list(query_results)
+
+        # Make the list of dicts into a dict of dicts with fs value as key
+        by_fs = {}
+        for bq_row in table_list:
+            by_fs[bq_row['fs']] = bq_row
+
+        #quotes = {}
+        #for fs, fs_value in by_fs.items():
+        #    if fs_value['quote'] in quotes:
+        #        quotes[fs_value['quote']][fs] = fs_value
+        #    else:
+        #        quotes[fs_value['quote']] = {fs: fs_value}
+
+        quotes = {}
+        for f in by_fs:
+            fs_row = by_fs[f]
+            quote = fs_row['quote']
+            if quote in quotes:
+                quotes[quote].append(fs_row)
+            else:
+                quotes[quote] = [fs_row]
+
+        template_values = {
+            'filesystems': filesystems,
+            'by_fs': by_fs,
+            'quotes_dict': quotes
+            }
+
+        template = jinja.get_template('quoteindex.html')
+        body = template.render(template_values)
+
+        output = render_theme(body, self.request)
+        self.response.write(output)
+
+
+class Filesystems(webapp2.RequestHandler):
+    """Class for Filesystems page."""
 
     def get(self):
         """Return the main page."""
@@ -165,15 +278,26 @@ class MainPage(webapp2.RequestHandler):
             'count': len(filesystems),
             'servers': servers,
         }
-        template = jinja.get_template('index.html')
+        template = jinja.get_template('filesystems.html')
         body = template.render(template_values)
         output = render_theme(body, self.request)
         self.response.write(output)
 
+#class MainPage(webapp2.RequestHandler):
+#    """Class for ClusterIndex page."""
+#
+#    def get(self):
+#        template = jinja.get_template('main.html')
+#        body = template.render()
+#        output = render_theme(body, self.request)
+#        self.response.write(output)
+
 
 app = webapp2.WSGIApplication([
-    ('/', MainPage),
-    ('/admin', AdminPage),
-    (r'/filesystems/(\d+)', FilesystemPage),
-    (r'/filesystems/(\d+)/edit', FilesystemEditPage),
+    #('/', MainPage),
+    ('/', QuoteIndex),
+    #('/admin', AdminPage),
+    ('/admin/filesystems', Filesystems),
+    (r'/admin/filesystems/(\d+)', FilesystemPage),
+    (r'/admin/filesystems/(\d+)/edit', FilesystemEditPage),
 ], debug=True)

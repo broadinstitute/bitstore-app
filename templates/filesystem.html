@@ -2,7 +2,7 @@
 
 &nbsp;
 
-<form action="/filesystems/{{ filesystem.id }}/edit" class="container" method="POST">
+<form action="/admin/filesystems/{{ filesystem.id }}/edit" class="container" method="POST">
 
     <div class="form-group row">
         <h4>BITStore Info</h4>
@@ -162,6 +162,6 @@
     {% if edit %}
     <input class="btn btn-primary" type="submit" value="Save">
     {% else %}
-    <a class="btn btn-primary" href="/filesystems/{{ filesystem.id }}/edit" role="button">Edit</a>
+    <a class="btn btn-primary" href="/admin/filesystems/{{ filesystem.id }}/edit" role="button">Edit</a>
     {% endif %}
 </form>
