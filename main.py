@@ -9,6 +9,8 @@ from google.appengine.api import users
 
 from bitstoreapiclient import BITStore
 
+#from bits.google.services.bigquery import BigQuery
+
 jinja = jinja2.Environment(
     loader=jinja2.FileSystemLoader('templates'),
     extensions=['jinja2.ext.autoescape'],
@@ -141,6 +143,18 @@ class FilesystemPage(webapp2.RequestHandler):
         output = render_theme(body, self.request)
         self.response.write(output)
 
+class QuoteIndex(webapp2.RequestHandler):
+    """Class for QuoteIndex page."""
+
+    def get(self):
+        """Return the quote page."""
+        template_values = {'test': 'test'}
+
+        template = jinja.get_template('quoteindex.html')
+        body = template.render(template_values)
+
+        output = render_theme(body, self.request)
+        self.response.write(output)
 
 class MainPage(webapp2.RequestHandler):
     """Class for MainPage."""
@@ -172,6 +186,7 @@ class MainPage(webapp2.RequestHandler):
 app = webapp2.WSGIApplication([
     ('/', MainPage),
     ('/admin', AdminPage),
+    ('/quote', QuoteIndex),
     (r'/filesystems/(\d+)', FilesystemPage),
     (r'/filesystems/(\d+)/edit', FilesystemEditPage),
 ], debug=True)
