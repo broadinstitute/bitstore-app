@@ -35,10 +35,10 @@ class BITStore(object):
 
     def __init__(
         self,
-        api='bitstore',
+        api='bitstore-dev',
         api_version='v1',
         api_key=None,
-        base_url='https://broad-bitstore-api.appspot.com/_ah/api',
+        base_url='https://broad-bitstore-api-dev.appspot.com/_ah/api',
         memcache_time=3600,
         debug=False,
     ):
@@ -68,6 +68,15 @@ class BITStore(object):
             id_token,
             'my-user-agent/1.0'
         )
+
+        print('ID Token: {}'.format(id_token))
+        #print(credentials)
+
+        #jtw = self.generate_jwt(self.service_account_email)
+        #json_obj = json.dumps(jtw)
+        #print("TESTESTESTESTESTEST")
+        #print(json_obj)
+        
 
         # create an httplib2 Http object
         # self.http = credentials.authorize(httplib2.Http(memcache, timeout=60))
