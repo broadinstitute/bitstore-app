@@ -154,7 +154,9 @@ class QuoteIndex(webapp2.RequestHandler):
         filesystems = b.get_filesystems()
 
         credentials, project_id = google.auth.default()
-        bq = BigQuery(project_id, credentials)
+        print("My creds:", credentials.signer_email)
+        #bq = BigQuery(project_id, credentials)
+        bq = BigQuery('broad-bitstore-app', credentials)
         query = 'select * from broad_bitstore_app.bits_billing_byfs_bitstore_historical where datetime = (select max(datetime) from broad_bitstore_app.bits_billing_byfs_bitstore_historical)'
         query_results = bq.bq_query(query)
         table_list = bq.assemble_query_result_list(query_results)

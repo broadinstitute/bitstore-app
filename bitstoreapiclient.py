@@ -40,7 +40,7 @@ class BITStore(object):
         api_key=None,
         base_url='https://broad-bitstore-api-dev.appspot.com/_ah/api',
         memcache_time=3600,
-        debug=False,
+        debug=True,
     ):
         """Initialize a class instance."""
         self.api_key = api_key
@@ -70,7 +70,7 @@ class BITStore(object):
         )
 
         print('ID Token: {}'.format(id_token))
-        #print(credentials)
+        print(credentials)
 
         #jtw = self.generate_jwt(self.service_account_email)
         #json_obj = json.dumps(jtw)
@@ -194,6 +194,7 @@ class BITStore(object):
     def get_paged_list(self, request, params={}):
         """Return a list of all items from a request."""
         response = request.list().execute()
+        #print("response!!!", response)
         if not response:
             return []
         items = response.get('items', [])
@@ -240,6 +241,7 @@ class BITStore(object):
             name = item[key]
 
             # put item into the appropriate bucket
+            #print(name[0])
             bucket = name[0]
             if bucket not in buckets:
                 buckets[bucket] = [item]
