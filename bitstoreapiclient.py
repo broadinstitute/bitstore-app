@@ -40,7 +40,7 @@ class BITStore(object):
         api_key=None,
         base_url='https://broad-bitstore-api-dev.appspot.com/_ah/api',
         memcache_time=3600,
-        debug=True,
+        debug=False,
     ):
         """Initialize a class instance."""
         self.api_key = api_key
@@ -68,15 +68,6 @@ class BITStore(object):
             id_token,
             'my-user-agent/1.0'
         )
-
-        print('ID Token: {}'.format(id_token))
-        print(credentials)
-
-        #jtw = self.generate_jwt(self.service_account_email)
-        #json_obj = json.dumps(jtw)
-        #print("TESTESTESTESTESTEST")
-        #print(json_obj)
-        
 
         # create an httplib2 Http object
         # self.http = credentials.authorize(httplib2.Http(memcache, timeout=60))
