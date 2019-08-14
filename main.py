@@ -8,12 +8,7 @@ import webapp2
 from bitstoreapiclient import BITStore
 from google.appengine.api import users
 import google.auth
-
-<<<<<<< HEAD
 from config import api, api_key, base_url, debug
-=======
-from bitstoreapiclient import BITStore
->>>>>>> d583f59... Get dev working
 from bigquery import BigQuery
 
 
@@ -23,16 +18,10 @@ jinja = jinja2.Environment(
     autoescape=True)
 
 PARAMS = {
-<<<<<<< HEAD
     'api': api,
     'api_key': api_key,
     'base_url': base_url,
     'debug': debug,
-=======
-    'api_key': 'AIzaSyDuZUxMX3SkIQZNTOW_25jTsZMbDstie2Y',
-    # 'base_url': 'http://karlsson.c.broad-karlsson.internal:8081/_ah/api',
-    'debug': True,
->>>>>>> d583f59... Get dev working
 }
 
 
