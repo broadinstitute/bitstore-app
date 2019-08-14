@@ -196,56 +196,6 @@ class QuoteIndex(webapp2.RequestHandler):
         self.response.write(output)
 
 
-class QuoteIndex(webapp2.RequestHandler):
-    """Class for QuoteIndex page."""
-
-    def get(self):
-        """Return the quote page."""
-        b = BITStore(**PARAMS)
-        filesystems = b.get_filesystems()
-
-        credentials, project_id = google.auth.default()
-        print("My creds:", credentials.signer_email)
-        #bq = BigQuery(project_id, credentials)
-        bq = BigQuery('broad-bitstore-app', credentials)
-        query = 'select * from broad_bitstore_app.bits_billing_byfs_bitstore_historical where datetime = (select max(datetime) from broad_bitstore_app.bits_billing_byfs_bitstore_historical)'
-        query_results = bq.bq_query(query)
-        table_list = bq.assemble_query_result_list(query_results)
-
-        # Make the list of dicts into a dict of dicts with fs value as key
-        by_fs = {}
-        for bq_row in table_list:
-            by_fs[bq_row['fs']] = bq_row
-
-        #quotes = {}
-        #for fs, fs_value in by_fs.items():
-        #    if fs_value['quote'] in quotes:
-        #        quotes[fs_value['quote']][fs] = fs_value
-        #    else:
-        #        quotes[fs_value['quote']] = {fs: fs_value}
-
-        quotes = {}
-        for f in by_fs:
-            fs_row = by_fs[f]
-            quote = fs_row['quote']
-            if quote in quotes:
-                quotes[quote].append(fs_row)
-            else:
-                quotes[quote] = [fs_row]
-
-        template_values = {
-            'filesystems': filesystems,
-            'by_fs': by_fs,
-            'quotes_dict': quotes
-            }
-
-        template = jinja.get_template('quoteindex.html')
-        body = template.render(template_values)
-
-        output = render_theme(body, self.request)
-        self.response.write(output)
-
-
 class Filesystems(webapp2.RequestHandler):
     """Class for Filesystems page."""
 
