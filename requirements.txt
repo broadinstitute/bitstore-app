@@ -1,4 +1,5 @@
 google-api-python-client
+google-cloud-bigquery
 bits-google
 pycrypto==2.6.1
 requests
