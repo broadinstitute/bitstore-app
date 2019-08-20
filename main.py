@@ -5,12 +5,16 @@ import json
 import os
 import webapp2
 
-from bitstoreapiclient import BITStore
-from google.appengine.api import users
-import google.auth
-from config import api, api_key, base_url, debug
-from bigquery import BigQuery
+#import requests
+#import requests_toolbelt.adapters.appengine
+#requests_toolbelt.adapters.appengine.monkeypatch(validate_certificate=True)
 
+import google.auth
+from google.appengine.api import users
+
+from bitstoreapiclient import BITStore
+#from bigquery import BigQuery
+from config import api, api_key, base_url, debug
 
 jinja = jinja2.Environment(
     loader=jinja2.FileSystemLoader('templates'),
@@ -42,6 +46,31 @@ def render_theme(body, request):
         is_dev=is_dev(),
         request=request,
     )
+
+
+#def post_request(url, headers=None, data=None):
+#    """Make a post using requests"""
+#    r = requests.post(url=url, headers=headers, data=data)
+#
+#    return r.text
+
+def assemble_query_result_list(query_result):
+    """
+    Creates a list of dicts with the keys being the schema field,
+    and the value being the value of that field
+    """
+    schema = query_result.schema
+    list_of_rows = []
+    for row in query_result:
+        i = 0
+        row_dict = {}
+        for attr in row:
+            row_dict[schema[i].name] = attr
+            i += 1
+
+        list_of_rows.append(row_dict)
+
+    return list_of_rows
 
 
 class AdminPage(webapp2.RequestHandler):
@@ -154,18 +183,16 @@ class QuoteIndex(webapp2.RequestHandler):
         b = BITStore(**PARAMS)
         filesystems = b.get_filesystems()
 
-        credentials, project_id = google.auth.default()
-        #bq = BigQuery(project_id, credentials)
-        bq = BigQuery('broad-bitstore-app', credentials)
-        query = 'select * from broad_bitstore_app.bits_billing_byfs_bitstore_historical where datetime = (select max(datetime) from broad_bitstore_app.bits_billing_byfs_bitstore_historical)'
-        query_results = bq.bq_query(query)
-        table_list = bq.assemble_query_result_list(query_results)
+        # Get the latest usage data from BQ
+        latest_usages = b.get_latest_fs_usages()
 
         # Make the list of dicts into a dict of dicts with fs value as key
         by_fs = {}
-        for bq_row in table_list:
+        for bq_row in latest_usages:
             by_fs[bq_row['fs']] = bq_row
 
+        # assemble a dictionary using each quote as a key
+        # WHY ARE THERE 2 OF THESE?!?!?
         #quotes = {}
         #for fs, fs_value in by_fs.items():
         #    if fs_value['quote'] in quotes:
@@ -173,6 +200,7 @@ class QuoteIndex(webapp2.RequestHandler):
         #    else:
         #        quotes[fs_value['quote']] = {fs: fs_value}
 
+        # assemble a dictionary using each quote as a key
         quotes = {}
         for f in by_fs:
             fs_row = by_fs[f]
@@ -221,19 +249,9 @@ class Filesystems(webapp2.RequestHandler):
         output = render_theme(body, self.request)
         self.response.write(output)
 
-#class MainPage(webapp2.RequestHandler):
-#    """Class for ClusterIndex page."""
-#
-#    def get(self):
-#        template = jinja.get_template('main.html')
-#        body = template.render()
-#        output = render_theme(body, self.request)
-#        self.response.write(output)
-
-
 app = webapp2.WSGIApplication([
-    #('/', MainPage),
     ('/', QuoteIndex),
+    #('/', Filesystems),
     #('/admin', AdminPage),
     ('/admin/filesystems', Filesystems),
     (r'/admin/filesystems/(\d+)', FilesystemPage),

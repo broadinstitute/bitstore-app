@@ -20,6 +20,7 @@ else:
 from apiclient.discovery import build
 from google.appengine.api import app_identity
 from google.appengine.api import memcache
+from google.appengine.api import urlfetch
 
 import google.auth
 # from google.auth.transport import request
@@ -66,11 +67,11 @@ class BITStore(object):
         self.service_account_email = self.credentials.service_account_email
 
         # request a Google ID token based on the service account email
-        id_token = self.get_id_token(self.service_account_email)
+        self.id_token = self.get_id_token(self.service_account_email)
 
         # create credentials from that id_token
         credentials = client.AccessTokenCredentials(
-            id_token,
+            self.id_token,
             'my-user-agent/1.0'
         )
 
@@ -237,7 +238,6 @@ class BITStore(object):
             name = item[key]
 
             # put item into the appropriate bucket
-            #print(name[0])
             bucket = name[0]
             if bucket not in buckets:
                 buckets[bucket] = [item]
@@ -288,3 +288,37 @@ class BITStore(object):
         storageclasses = self.get_paged_list(self.bitstore.storageclasses(), params)
         memcache.add('storageclasses', storageclasses, self.memcache_time)
         return storageclasses
+
+    # BQ queries
+    def query_historical_usage_bq(self, json_data):
+        """Query BQ table for the chosen dates set of filesystem data."""
+
+        headers = {
+            'Content-Type': 'application/json',
+            'Authorization': 'bearer {}'.format(self.id_token)
+        }
+
+        # Assemble the headers and data into a HTTP request and run fetch
+        table_list = urlfetch.fetch(
+            method=urlfetch.POST,
+            url='https://us-central1-broad-bitstore-app.cloudfunctions.net/QueryBQTableBitstore',
+            headers=headers,
+            payload=json.dumps(json_data),
+            deadline=15
+        ).content
+
+        return table_list
+
+    def get_latest_fs_usages(self):
+        fs_usage_latest = self.get_memcache_group('fs_usage_latest')
+        if fs_usage_latest is not None:
+            return fs_usage_latest
+        data = {
+            'select': '*',
+            'dataset': 'broad_bitstore_app',
+            'table_name': 'bits_billing_byfs_bitstore_historical',
+            'date_time': '(select max(datetime) from broad_bitstore_app.bits_billing_byfs_bitstore_historical)'
+        }
+        fs_usage_latest = json.loads(self.query_historical_usage_bq(data))
+        self.save_memcache_group('fs_usage_latest', fs_usage_latest, 'server')
+        return fs_usage_latest
