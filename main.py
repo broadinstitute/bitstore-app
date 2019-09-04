@@ -4,16 +4,12 @@ import jinja2
 import json
 import os
 import webapp2
-
-#import requests
-#import requests_toolbelt.adapters.appengine
-#requests_toolbelt.adapters.appengine.monkeypatch(validate_certificate=True)
+from datetime import datetime
 
 import google.auth
 from google.appengine.api import users
 
 from bitstoreapiclient import BITStore
-#from bigquery import BigQuery
 from config import api, api_key, base_url, debug
 
 jinja = jinja2.Environment(
@@ -46,31 +42,6 @@ def render_theme(body, request):
         is_dev=is_dev(),
         request=request,
     )
-
-
-#def post_request(url, headers=None, data=None):
-#    """Make a post using requests"""
-#    r = requests.post(url=url, headers=headers, data=data)
-#
-#    return r.text
-
-def assemble_query_result_list(query_result):
-    """
-    Creates a list of dicts with the keys being the schema field,
-    and the value being the value of that field
-    """
-    schema = query_result.schema
-    list_of_rows = []
-    for row in query_result:
-        i = 0
-        row_dict = {}
-        for attr in row:
-            row_dict[schema[i].name] = attr
-            i += 1
-
-        list_of_rows.append(row_dict)
-
-    return list_of_rows
 
 
 class AdminPage(webapp2.RequestHandler):
@@ -175,20 +146,24 @@ class FilesystemPage(webapp2.RequestHandler):
         self.response.write(output)
 
 
-class QuoteIndex(webapp2.RequestHandler):
-    """Class for QuoteIndex page."""
+class Usage(webapp2.RequestHandler):
+    """Class for Usage page."""
 
     def get(self):
-        """Return the quote page."""
+        """Return the usage page."""
         b = BITStore(**PARAMS)
         filesystems = b.get_filesystems()
 
         # Get the latest usage data from BQ
         latest_usages = b.get_latest_fs_usages()
 
+        latest_usage_date = latest_usages[1]['datetime'].split("+")[0]
+
         # Make the list of dicts into a dict of dicts with fs value as key
         by_fs = {}
         for bq_row in latest_usages:
+            if not bq_row['active']:
+                continue
             by_fs[bq_row['fs']] = bq_row
 
         # assemble a dictionary using each quote as a key
@@ -213,10 +188,11 @@ class QuoteIndex(webapp2.RequestHandler):
         template_values = {
             'filesystems': filesystems,
             'by_fs': by_fs,
-            'quotes_dict': quotes
+            'quotes_dict': quotes,
+            'latest_usage_date': latest_usage_date
             }
 
-        template = jinja.get_template('quoteindex.html')
+        template = jinja.get_template('usage.html')
         body = template.render(template_values)
 
         output = render_theme(body, self.request)
@@ -232,25 +208,34 @@ class Filesystems(webapp2.RequestHandler):
         filesystems = b.get_filesystems()
 
         servers = {}
+        #quotes = {}
         for f in filesystems:
-            server = f['server']
+            server = f.get('server', None)
+            quote = f.get('quote', None)
+            # Assemble server dictionary
             if server in servers:
                 servers[server].append(f)
             else:
                 servers[server] = [f]
+            # Assemble quote dictionary
+            #if quote in quotes:
+            #    quotes[quote].append(f)
+            #else:
+            #    quotes[quote] = [f]
 
         template_values = {
             'filesystems': filesystems,
-            'count': len(filesystems),
             'servers': servers,
+            #'quotes': quotes
         }
         template = jinja.get_template('filesystems.html')
         body = template.render(template_values)
         output = render_theme(body, self.request)
         self.response.write(output)
 
+
 app = webapp2.WSGIApplication([
-    ('/', QuoteIndex),
+    ('/', Usage),
     #('/', Filesystems),
     #('/admin', AdminPage),
     ('/admin/filesystems', Filesystems),

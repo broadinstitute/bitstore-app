@@ -1,0 +1,31 @@
+<h2>Latest filesystem usages ({{ latest_usage_date }}):</h2>
+<div class="table-responsive-xl">
+<table class="table table-sm display" id="UsageTable">
+    <thead>
+        <tr>
+            <th scope="col">Server</th>
+            <th scope="col">Filesystem</th>
+            <th scope="col">Quota Allocation</th>
+            <th scope="col">Usage</th>
+            <th scope="col">Snapshot Usage</th>
+            <th scope="col">DR</th>
+            <th scope="col">DR Usage</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for q in quotes_dict %}
+            {% for f in quotes_dict[q] %}
+            <tr>
+                <td><a>{{ f.server }}</a></td>
+                <td><a>{{ f.fs }}</a></td>
+                <td><a>{{ f.quota_allocation }}</a></td>
+                <td><a>{{ f.byte_usage }}</a></td>
+                <td><a>{{ f.snapshot_byte_usage }}</a></td>
+                <td><a>{{ f.disk_backup }}</a></td>
+                <td><a>{{ f.dr_byte_usage }}</a></td>
+            </tr>
+            {% endfor %}
+        {% endfor %}
+    </tbody>
+</table>
+</div>
