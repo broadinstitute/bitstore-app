@@ -40,8 +40,7 @@ def render_theme(body, request):
         body=body,
         is_admin=users.is_current_user_admin(),
         is_dev=is_dev(),
-        request=request,
-        user_email=users.get_current_user().email()
+        request=request
     )
 
 
@@ -154,6 +153,7 @@ class Usage(webapp2.RequestHandler):
         """Return the usage page."""
         b = BITStore(**PARAMS)
         filesystems = b.get_filesystems()
+        storageclasses = b.get_storageclasses()
 
         # Get the latest usage data from BQ
         latest_usages = b.get_latest_fs_usages()
@@ -190,7 +190,8 @@ class Usage(webapp2.RequestHandler):
             'filesystems': filesystems,
             'by_fs': by_fs,
             'quotes_dict': quotes,
-            'latest_usage_date': latest_usage_date
+            'latest_usage_date': latest_usage_date,
+            'storage_classes': storageclasses
             }
 
         template = jinja.get_template('usage.html')
@@ -237,7 +238,6 @@ class Filesystems(webapp2.RequestHandler):
 
 app = webapp2.WSGIApplication([
     ('/', Usage),
-    #('/', Filesystems),
     #('/admin', AdminPage),
     ('/admin/filesystems', Filesystems),
     (r'/admin/filesystems/(\d+)', FilesystemPage),
