@@ -5,11 +5,12 @@
         <tr>
             <th scope="col">Server</th>
             <th scope="col">Filesystem</th>
-            <th scope="col">Quota Allocation</th>
-            <th scope="col">Usage</th>
-            <th scope="col">Snapshot Usage</th>
+            <th scope="col">Quote</th>
+            <th scope="col">Quota Allocation (TiB)</th>
+            <th scope="col">Usage (TiB)</th>
+            <th scope="col">Snapshot Usage (TiB)</th>
             <th scope="col">DR</th>
-            <th scope="col">DR Usage</th>
+            <th scope="col">DR Usage (TiB)</th>
         </tr>
     </thead>
     <tbody>
@@ -18,6 +19,7 @@
             <tr>
                 <td><a>{{ f.server }}</a></td>
                 <td><a>{{ f.fs }}</a></td>
+                <td><a>{{ f.quote }}</a></td>
                 <td><a>{{ f.quota_allocation }}</a></td>
                 <td><a>{{ f.byte_usage }}</a></td>
                 <td><a>{{ f.snapshot_byte_usage }}</a></td>

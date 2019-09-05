@@ -41,6 +41,7 @@ def render_theme(body, request):
         is_admin=users.is_current_user_admin(),
         is_dev=is_dev(),
         request=request,
+        user_email=users.get_current_user().email()
     )
 
 

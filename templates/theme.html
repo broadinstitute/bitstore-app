@@ -29,6 +29,8 @@
 
   <nav class="navbar navbar-expand-md navbar-dark bg-dark mb-4">
     <a class="navbar-brand" href="/">BITStore 2.0</a>
+    <p class="text-danger">THIS IS A DEV PAGE, DO NOT LINK TO PEOPLE OUTSIDE BITS!</p>
+    <p class="text-danger">{{ user_email }}</p>
     <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarCollapse" aria-controls="navbarCollapse"
       aria-expanded="false" aria-label="Toggle navigation">
       <span class="navbar-toggler-icon"></span>
@@ -58,6 +60,10 @@
    {{ body|safe }}
   </main>
 
+  <footer>
+  <p>Release 2.1</p>
+  </footer>
+
   <!-- Bootstrap core JavaScript
     ================================================== -->
   <!-- Placed at the end of the document so the pages load faster -->
@@ -77,14 +83,13 @@
         "lengthMenu": [ 10, 50, 100, 150, 200, 250 ],
         "columnDefs": [
             {   
-                "targets": [ 2, 3, 4, 6 ],
+                "targets": [ 3, 4, 5, 7 ],
                 "render": function ( data ) {
                     var bytes = numeral(data).value()
-                    //return bytes.format('0.0 ib')
-                    //bytes = ParseInt(data, 10)
+
                     if (isNaN(bytes)) { return 0 }
-                    //var rounded = Math.round(bytes, 4)
-                    return Math.round((((((bytes) / 1024) / 1024) / 1024) / 1024), 4)
+
+                    return toTiB(bytes)
                 }
             }
         ]
@@ -102,6 +107,12 @@
         }
     );
   } );
+  </script>
+
+  <script>
+  function toTiB(bytes){
+      return (((((bytes) / 1024) / 1024) / 1024) / 1024).toFixed(2)
+  }
   </script>
 
 </body>
