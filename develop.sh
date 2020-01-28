@@ -21,7 +21,7 @@ sudo docker run -it --rm \
   -p 8000:8000 \
   -p 8080:8080 \
   -w /usr/src \
-  google/cloud-sdk:latest \
+  google/cloud-sdk:270.0.0 \
     dev_appserver.py \
       -A ${APP} \
       --admin_host 0.0.0.0 \

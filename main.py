@@ -251,7 +251,6 @@ class Usage(webapp2.RequestHandler):
 
         available_dates = [todays_date - datetime.timedelta(days=x) for x in range(40)]
 
-
         template_values = {
             'filesystems': filesys_dict,
             'by_fs': by_fs,
