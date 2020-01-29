@@ -1,33 +1,25 @@
 """BITStore API Client class file."""
 
-import base64
-import httplib
-import httplib2
+# import base64
+# import httplib
+# import httplib2
 import json
 import sys
-import time
+# import time
 
-if sys.version_info >= (3, 0):
-    from urllib.parse import urlencode
-else:
-    from urllib import urlencode
+# if sys.version_info >= (3, 0):
+#     from urllib.parse import urlencode
+# else:
+#     from urllib import urlencode
 
 # support for requests
 # import requests
 # import requests_toolbelt.adapters.appengine
 # requests_toolbelt.adapters.appengine.monkeypatch()
 
-from apiclient.discovery import build
-from google.appengine.api import app_identity
-from google.appengine.api import memcache
-from google.appengine.api import urlfetch
-
-import google.auth
-# from google.auth.transport import request
-# from google.auth.transport.requests import AuthorizedSession
-
-from oauth2client.contrib.appengine import AppAssertionCredentials
-from oauth2client import client
+# import google.auth
+# from bits.google import Google
+from bits.appengine.endpoints import Endpoints
 
 
 def chunks(l, n):
@@ -36,157 +28,189 @@ def chunks(l, n):
         yield l[i:i + n]
 
 
-class BITStore(object):
+class BITStore(Endpoints.Client):
     """BITStore class."""
 
     def __init__(
         self,
-        api='bitstore-dev',
-        api_version='v1',
         api_key=None,
-        base_url='https://broad-bitstore-api-dev.appspot.com/_ah/api',
-        memcache_time=3600,
-        debug=False,
+        base_url='http://localhost:8080',
+        # base_url='https://broad-bitstore-api-dev.appspot.com/_ah/api',
+        api='bitstore-dev',
+        version='v1',
+        verbose=False,
     ):
-        """Initialize a class instance."""
-        self.api_key = api_key
-        self.debug = debug
-        self.memcache_time = memcache_time
-
-        # set scopes for the bitsdb service connection
-        self.scopes = [
-            'https://www.googleapis.com/auth/cloud-platform',
-            'https://www.googleapis.com/auth/userinfo.email',
-            'https://www.googleapis.com/auth/userinfo.profile',
-        ]
-
-        # get application default credentials
-        self.credentials, self.project_id = google.auth.default(scopes=self.scopes)
-
-        # get service account email
-        self.service_account_email = self.credentials.service_account_email
-
-        # request a Google ID token based on the service account email
-        self.id_token = self.get_id_token(self.service_account_email)
-
-        # create credentials from that id_token
-        credentials = client.AccessTokenCredentials(
-            self.id_token,
-            'my-user-agent/1.0'
+        """Initialize a BITSdb class instance."""
+        Endpoints.Client.__init__(
+            self,
+            api_key=api_key,
+            base_url=base_url,
+            api=api,
+            version=version,
+            verbose=verbose,
         )
+        self.bitstore = self.service
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+    #     """Initialize a class instance."""
+    #     self.api_key = api_key
+    #     self.debug = debug
+    #     self.memcache_time = memcache_time
 
-        # create an httplib2 Http object
-        # self.http = credentials.authorize(httplib2.Http(memcache, timeout=60))
-        self.http = credentials.authorize(httplib2.Http(timeout=120))
+    #     # set scopes for the bitsdb service connection
+    #     self.scopes = [
+    #         'https://www.googleapis.com/auth/cloud-platform',
+    #         'https://www.googleapis.com/auth/userinfo.email',
+    #         'https://www.googleapis.com/auth/userinfo.profile',
+    #     ]
 
-        # print out the access token
-        if self.debug:
-            credentials = AppAssertionCredentials(self.scopes)
-            access_token = credentials.get_access_token().access_token
-            print('Access Token: %s' % (access_token))
+    #     # get application default credentials
+    #     self.credentials, self.project_id = google.auth.default(scopes=self.scopes)
 
-        # build the discovery_url
-        discovery_url = '%s/discovery/v1/apis/%s/%s/rest' % (
-            base_url,
-            api,
-            api_version
-        )
+    #     # get service account email
+    #     self.service_account_email = self.credentials.service_account_email
 
-        # create the service connection to bitsdb
-        self.bitstore = build(
-            api,
-            api_version,
-            developerKey=api_key,
-            discoveryServiceUrl=discovery_url,
-            http=self.http,
-            # credentials=self.credentials,
-        )
+    #     # request a Google ID token based on the service account email
+    #     self.id_token = self.get_id_token(self.service_account_email)
 
-    def auth_service_account_json(self):
-        """Authorize service account credentials stored in a bucket."""
-        # get application identity
-        app_id = app_identity.get_application_id()
+    #     # create credentials from that id_token
+    #     credentials = client.AccessTokenCredentials(
+    #         self.id_token,
+    #         'my-user-agent/1.0'
+    #     )
 
-        bucket = '%s.appspot.com' % (app_id)
-        filename = 'service_account.json'
+    #     # create an httplib2 Http object
+    #     # self.http = credentials.authorize(httplib2.Http(memcache, timeout=60))
+    #     self.http = credentials.authorize(httplib2.Http(timeout=120))
 
-        # get app assertion credentials
-        credentials = AppAssertionCredentials(self.scopes)
+    #     # print out the access token
+    #     if self.debug:
+    #         credentials = AppAssertionCredentials(self.scopes)
+    #         access_token = credentials.get_access_token().access_token
+    #         print('Access Token: %s' % (access_token))
 
-        # connect to storage api
-        storage = build('storage', 'v1', credentials=credentials)
-        objects = storage.objects()
+    #     # build the discovery_url
+    #     discovery_url = '%s/discovery/v1/apis/%s/%s/rest' % (
+    #         base_url,
+    #         api,
+    #         api_version
+    #     )
 
-        # get storage object data
-        try:
-            body = objects.get(bucket=bucket, object=filename).execute()
-        except Exception as e:
-            if e._get_reason() == 'Not Found':
-                print('ERROR: service account key [gs://%s/%s] not found!' % (
-                    bucket,
-                    filename,
-                ))
-            else:
-                print('ERROR: getting service account key [gs://%s/%s]!' % (
-                    bucket,
-                    filename,
-                ))
-            return
+    #     # create the service connection to bitsdb
+    #     self.bitstore = build(
+    #         api,
+    #         api_version,
+    #         developerKey=api_key,
+    #         discoveryServiceUrl=discovery_url,
+    #         http=self.http,
+    #         # credentials=self.credentials,
+    #     )
 
-        if 'metadata' not in body:
-            print('WARNING: "metadata" not found in gs://%s/%s' % (
-                bucket,
-                filename,
-            ))
-            body['metadata'] = {'encrypted': False}
-            objects.update(bucket=bucket, object=filename, body=body).execute()
+    # def auth_service_account_json(self):
+    #     """Authorize service account credentials stored in a bucket."""
+    #     # get application identity
+    #     app_id = app_identity.get_application_id()
 
-        print(json.dumps(body, indent=2, sort_keys=True))
+    #     bucket = '%s.appspot.com' % (app_id)
+    #     filename = 'service_account.json'
 
-    def generate_jwt(self, service_account_email):
-        """Generate a signed JSON Web Token using the Google App Engine default service account."""
-        now = int(time.time())
+    #     # get app assertion credentials
+    #     credentials = AppAssertionCredentials(self.scopes)
 
-        header_json = json.dumps({
-            "typ": "JWT",
-            "alg": "RS256"
-        })
+    #     # connect to storage api
+    #     storage = build('storage', 'v1', credentials=credentials)
+    #     objects = storage.objects()
 
-        payload_json = json.dumps({
-            # issued at - time
-            "iat": now,
-            # expires after one hour.
-            "exp": now + 3600,
-            # iss is the service account email.
-            "iss": service_account_email,
-            # target_audience is the URL of the target service.
-            "target_audience": "https://broad-bitstore-api.appspot.com/web-client-id",
-            # aud must be Google token endpoints URL.
-            "aud": "https://www.googleapis.com/oauth2/v4/token"
-        })
+    #     # get storage object data
+    #     try:
+    #         body = objects.get(bucket=bucket, object=filename).execute()
+    #     except Exception as e:
+    #         if e._get_reason() == 'Not Found':
+    #             print('ERROR: service account key [gs://%s/%s] not found!' % (
+    #                 bucket,
+    #                 filename,
+    #             ))
+    #         else:
+    #             print('ERROR: getting service account key [gs://%s/%s]!' % (
+    #                 bucket,
+    #                 filename,
+    #             ))
+    #         return
 
-        header_and_payload = '{}.{}'.format(
-            base64.urlsafe_b64encode(header_json),
-            base64.urlsafe_b64encode(payload_json))
-        (_, signature) = app_identity.sign_blob(header_and_payload)
-        signed_jwt = '{}.{}'.format(
-            header_and_payload,
-            base64.urlsafe_b64encode(signature))
+    #     if 'metadata' not in body:
+    #         print('WARNING: "metadata" not found in gs://%s/%s' % (
+    #             bucket,
+    #             filename,
+    #         ))
+    #         body['metadata'] = {'encrypted': False}
+    #         objects.update(bucket=bucket, object=filename, body=body).execute()
 
-        return signed_jwt
+    #     print(json.dumps(body, indent=2, sort_keys=True))
 
-    def get_id_token(self, service_account_email):
-        """Request a Google ID token using a JWT."""
-        params = urlencode({
-            'grant_type': 'urn:ietf:params:oauth:grant-type:jwt-bearer',
-            'assertion': self.generate_jwt(service_account_email)
-        })
-        headers = {"Content-Type": "application/x-www-form-urlencoded"}
-        conn = httplib.HTTPSConnection("www.googleapis.com")
-        conn.request("POST", "/oauth2/v4/token", params, headers)
-        res = json.loads(conn.getresponse().read())
-        conn.close()
-        return res['id_token']
+    # def generate_jwt(self, service_account_email):
+    #     """Generate a signed JSON Web Token using the Google App Engine default service account."""
+    #     now = int(time.time())
+
+    #     header_json = json.dumps({
+    #         "typ": "JWT",
+    #         "alg": "RS256"
+    #     })
+
+    #     payload_json = json.dumps({
+    #         # issued at - time
+    #         "iat": now,
+    #         # expires after one hour.
+    #         "exp": now + 3600,
+    #         # iss is the service account email.
+    #         "iss": service_account_email,
+    #         # target_audience is the URL of the target service.
+    #         "target_audience": "https://broad-bitstore-api.appspot.com/web-client-id",
+    #         # aud must be Google token endpoints URL.
+    #         "aud": "https://www.googleapis.com/oauth2/v4/token"
+    #     })
+
+    #     header_and_payload = '{}.{}'.format(
+    #         base64.urlsafe_b64encode(header_json),
+    #         base64.urlsafe_b64encode(payload_json))
+    #     (_, signature) = app_identity.sign_blob(header_and_payload)
+    #     signed_jwt = '{}.{}'.format(
+    #         header_and_payload,
+    #         base64.urlsafe_b64encode(signature))
+
+    #     return signed_jwt
+
+    # def get_id_token(self, service_account_email):
+    #     """Request a Google ID token using a JWT."""
+    #     params = urlencode({
+    #         'grant_type': 'urn:ietf:params:oauth:grant-type:jwt-bearer',
+    #         'assertion': self.generate_jwt(service_account_email)
+    #     })
+    #     headers = {"Content-Type": "application/x-www-form-urlencoded"}
+    #     conn = httplib.HTTPSConnection("www.googleapis.com")
+    #     conn.request("POST", "/oauth2/v4/token", params, headers)
+    #     res = json.loads(conn.getresponse().read())
+    #     conn.close()
+    #     return res['id_token']
 
     def get_paged_list(self, request, params={}):
         """Return a list of all items from a request."""

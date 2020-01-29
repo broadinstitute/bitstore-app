@@ -4,14 +4,15 @@ import json
 import os
 import datetime
 
+import google.auth
+
 from bits.appengine import AppEngine
 from flask import Flask, render_template, redirect, request
 
-from bitstoreapiclient import BITStore
+# from bitstoreapiclient import BITStore
 from config import api, api_key, base_url, debug
 
 todays_date = datetime.datetime.today()
-
 
 PARAMS = {
     'api': api,
@@ -20,15 +21,23 @@ PARAMS = {
     'debug': debug,
 }
 
+_, project = google.auth.default()
+
 DEBUG = False
 
-# initialize the flask app
-app = Flask(__name__, template_folder='templates')
-
-app.jinja_options = {
-    'extensions': ['jinja2.ext.autoescape'],
-    'autoescape': True
+debug_user = {
+    'email': 'daltschu@broadinstitue.org',
+    'id': '117063677019555687611',
 }
+
+# initialize the flask app
+app = Flask(__name__)
+
+appengine = AppEngine(
+    config_project=project,
+    debug_user=debug_user,
+    user_project=project,
+)
 
 def is_dev():
     """Return true if this is the development environment."""
@@ -84,13 +93,13 @@ def strftime_filter(s):
 
 
 
-#class AdminPage(webapp2.RequestHandler):
+# class AdminPage(webapp2.RequestHandler):
 #    """Class for AdminPage."""
-#
+
 #    def get(self):
 #        """Return the admin page."""
 #        template_values = {
-#
+
 #        }
 #        template = jinja.get_template('admin.html')
 #        body = template.render(template_values)
