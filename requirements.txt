@@ -1,4 +1,6 @@
 google-api-python-client
+bits-appengine
 bits-google
 pycrypto==2.6.1
 oauth2client
+flask==1.0.2

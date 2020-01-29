@@ -4,8 +4,11 @@
 APP='broad-bitstore-app'
 SERVICEACCOUNT='service_account_prod.json'
 if [ "$1" == 'dev' ]; then
-  APP="broad-bitstore-app-sandbox"
+  APP="broad-bitstore-app-dev"
   SERVICEACCOUNT='service_account_dev.json'
+elif [ "$1" == 'sandbox' ]; then
+  APP="broad-bitstore-app-sandbox"
+  SERVICEACCOUNT='service_account_sandbox.json'
 fi
 
 IMAGE="gcr.io/${APP}/bitstore-app:latest"
