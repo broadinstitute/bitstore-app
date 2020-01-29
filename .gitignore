@@ -100,8 +100,12 @@ ENV/
 # mypy
 .mypy_cache/
 
+# vscode
+.vscode/
+
 *.p12
 *.pem
 tmp/
 config*.py
 core
+etc/
