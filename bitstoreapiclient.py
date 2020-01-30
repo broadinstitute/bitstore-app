@@ -31,8 +31,8 @@ class BITStore(Endpoints.Client):
         self,
         api_key=None,
         base_url='http://localhost:8080',
-        # base_url='https://broad-bitstore-api-dev.appspot.com/_ah/api',
-        api='bitsdb',
+        # base_url='https://broad-bitstore-api-dev.appspot.com',
+        api='bitstore-dev',
         version='v1',
         verbose=False,
     ):
@@ -63,57 +63,57 @@ class BITStore(Endpoints.Client):
             pageToken = response.get('nextPageToken')
         return items
 
-    # get a group of items from memcache
-    def get_memcache_group(self, group):
-        """Return a list of a group of memcache items."""
-        group_list = memcache.get(group)
-        if group_list is None:
-            return None
+    # # get a group of items from memcache
+    # def get_memcache_group(self, group):
+    #     """Return a list of a group of memcache items."""
+    #     group_list = memcache.get(group)
+    #     if group_list is None:
+    #         return None
 
-        # create a list of buckets of items
-        buckets = []
-        for item in group_list:
-            bucket = item[0]
-            if bucket not in buckets:
-                buckets.append(bucket)
+    #     # create a list of buckets of items
+    #     buckets = []
+    #     for item in group_list:
+    #         bucket = item[0]
+    #         if bucket not in buckets:
+    #             buckets.append(bucket)
 
-        # for each bucket, retrieve items
-        items = []
-        for b in buckets:
-            bkey = '%s:%s' % (group, b)
-            bitems = memcache.get(bkey)
-            if bitems:
-                items += bitems
+    #     # for each bucket, retrieve items
+    #     items = []
+    #     for b in buckets:
+    #         bkey = '%s:%s' % (group, b)
+    #         bitems = memcache.get(bkey)
+    #         if bitems:
+    #             items += bitems
 
-        return items
+    #     return items
 
-    # save a large group of items in memcache
-    def save_memcache_group(self, group, items, key):
-        """Save a list of memcache items too large for one key."""
-        buckets = {}
-        items_list = []
+    # # save a large group of items in memcache
+    # def save_memcache_group(self, group, items, key):
+    #     """Save a list of memcache items too large for one key."""
+    #     buckets = {}
+    #     items_list = []
 
-        # create a dict of buckets of items and a list of item names
-        for item in items:
-            name = item[key]
+    #     # create a dict of buckets of items and a list of item names
+    #     for item in items:
+    #         name = item[key]
 
-            # put item into the appropriate bucket
-            bucket = name[0]
-            if bucket not in buckets:
-                buckets[bucket] = [item]
-            else:
-                buckets[bucket].append(item)
+    #         # put item into the appropriate bucket
+    #         bucket = name[0]
+    #         if bucket not in buckets:
+    #             buckets[bucket] = [item]
+    #         else:
+    #             buckets[bucket].append(item)
 
-            # add name to items_list
-            items_list.append(name)
+    #         # add name to items_list
+    #         items_list.append(name)
 
-        # save each of the buckets to memcache
-        for b in buckets:
-            key = '%s:%s' % (group, b)
-            memcache.add(key, buckets[b], self.memcache_time)
+    #     # save each of the buckets to memcache
+    #     for b in buckets:
+    #         key = '%s:%s' % (group, b)
+    #         memcache.add(key, buckets[b], self.memcache_time)
 
-        # save the list of items to memcache
-        memcache.add(group, items_list, self.memcache_time)
+    #     # save the list of items to memcache
+    #     memcache.add(group, items_list, self.memcache_time)
 
     # convert a list to a dict
     def to_json(self, items, key='id'):
@@ -127,12 +127,12 @@ class BITStore(Endpoints.Client):
     # filesystems
     def get_filesystems(self):
         """Return a list of Filesystems from BITSdb."""
-        filesystems = self.get_memcache_group('filesystems')
-        if filesystems is not None:
-            return filesystems
+        # filesystems = self.get_memcache_group('filesystems')
+        # if filesystems is not None:
+        #     return filesystems
         params = {'limit': 1000}
         filesystems = self.get_paged_list(self.bitstore.filesystems(), params)
-        self.save_memcache_group('filesystems', filesystems, 'server')
+        # self.save_memcache_group('filesystems', filesystems, 'server')
         return filesystems
 
     def get_filesystem(self, filesystem_id):
@@ -141,21 +141,22 @@ class BITStore(Endpoints.Client):
 
     def get_storageclasses(self):
         """Return a list of StorageClases from BITSdb."""
-        storageclasses = memcache.get('storageclasses')
-        if storageclasses is not None:
-            return storageclasses
+        # storageclasses = memcache.get('storageclasses')
+        # if storageclasses is not None:
+        #     return storageclasses
         params = {'limit': 1000}
         storageclasses = self.get_paged_list(self.bitstore.storageclasses(), params)
-        memcache.add('storageclasses', storageclasses, self.memcache_time)
+        # memcache.add('storageclasses', storageclasses, self.memcache_time)
         return storageclasses
 
     # BQ queries
     def query_historical_usage_bq(self, json_data, function):
         """Query BQ table for the chosen dates set of filesystem data."""
 
+        print(inspect(self.bitstore))
         headers = {
             'Content-Type': 'application/json',
-            'Authorization': 'bearer {}'.format(self.id_token)
+            'Authorization': 'bearer {}'.format(self.bitstore.generate_id_token())
         }
 
         # Assemble the headers and data into a HTTP request and run fetch
@@ -170,12 +171,12 @@ class BITStore(Endpoints.Client):
         return table_list
 
     def get_fs_usages(self, datetime=None, select='*'):
-        if datetime:
-            fs_usage = self.get_memcache_group('datetime')
-        else:
-            fs_usage = self.get_memcache_group('fs_usage_latest')
-        if fs_usage is not None:
-            return fs_usage
+        # if datetime:
+        #     fs_usage = self.get_memcache_group('datetime')
+        # else:
+        #     fs_usage = self.get_memcache_group('fs_usage_latest')
+        # if fs_usage is not None:
+        #     return fs_usage
         if not datetime:
             datetime = '(select max(datetime) from broad_bitstore_app.bits_billing_byfs_bitstore_historical)'
         data = {
@@ -185,10 +186,10 @@ class BITStore(Endpoints.Client):
             'date_time': datetime
         }
         fs_usage = json.loads(self.query_historical_usage_bq(data, 'https://us-central1-broad-bitstore-app.cloudfunctions.net/QueryBQTableBitstore'))
-        if not datetime:
-            self.save_memcache_group('fs_usage_latest', fs_usage, 'server')
-        else:
-            self.save_memcache_group(datetime, fs_usage, 'server')
+        # if not datetime:
+        #     self.save_memcache_group('fs_usage_latest', fs_usage, 'server')
+        # else:
+        #     self.save_memcache_group(datetime, fs_usage, 'server')
         return fs_usage
 
     def get_fs_usage_all_time(self, fs, select='*'):
