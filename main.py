@@ -46,12 +46,14 @@ def is_dev():
     return dev
 
 
-def render_theme(body, request):
+def render_theme(body):
     """Render the main template header and footer."""
     return render_template(
         'theme.html',
-        is_admin=users.is_current_user_admin(),
-        is_dev=is_dev(),
+        # is_admin=users.is_current_user_admin(),
+        is_admin=True, # Change this later, for testing
+        # is_dev=is_dev(),
+        is_dev=True, # Change this later, for testing
         body=body
     )
 

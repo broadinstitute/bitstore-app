@@ -160,15 +160,11 @@ class BITStore(Endpoints.Client):
         }
 
         # Assemble the headers and data into a HTTP request and run fetch
-        # print(json_data)
-        # payload = json.dumps(json_data)
-        print("TEST TEST TEST {}".format(json_data))
-        payload=json.dumps(json_data)
+        
         table_list = requests.post(
             url=function,
             headers=headers,
-            data=payload,
-            # deadline=15
+            data=json.dumps(json_data),
         ).content
 
         return table_list
