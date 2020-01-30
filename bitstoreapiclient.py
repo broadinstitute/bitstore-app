@@ -9,7 +9,7 @@ import sys
 #     from urllib import urlencode
 
 # support for requests
-# import requests
+import requests
 # import requests_toolbelt.adapters.appengine
 # requests_toolbelt.adapters.appengine.monkeypatch()
 
@@ -153,19 +153,22 @@ class BITStore(Endpoints.Client):
     def query_historical_usage_bq(self, json_data, function):
         """Query BQ table for the chosen dates set of filesystem data."""
 
-        print(inspect(self.bitstore))
+        # print(inspect(self.bitstore))
         headers = {
             'Content-Type': 'application/json',
-            'Authorization': 'bearer {}'.format(self.bitstore.generate_id_token())
+            'Authorization': 'bearer {}'.format(self.generate_id_token())
         }
 
         # Assemble the headers and data into a HTTP request and run fetch
-        table_list = urlfetch.fetch(
-            method=urlfetch.POST,
+        # print(json_data)
+        # payload = json.dumps(json_data)
+        print("TEST TEST TEST {}".format(json_data))
+        payload=json.dumps(json_data)
+        table_list = requests.post(
             url=function,
             headers=headers,
-            payload=json.dumps(json_data),
-            deadline=15
+            data=payload,
+            # deadline=15
         ).content
 
         return table_list
