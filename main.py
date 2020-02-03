@@ -86,11 +86,13 @@ def convert_to_tebi(bytes):
 
 @app.template_filter('strptime')
 def strptime_filter(s):
-    return datetime.datetime.strptime
+    """Jinja filter for strptime."""
+    return datetime.datetime.strptime(s, '%Y-%m-%d %H:%M:%S')
 
 @app.template_filter('strftime')
 def strftime_filter(s):
-    return datetime.datetime.strftime
+    """Jinja filter for strftime."""
+    return datetime.datetime.strftime(s, "%Y-%m-%d")
 
 
 
@@ -177,7 +179,7 @@ def filesystem_edit_page(filesystem_id):
         redirect('/admin/filesystems/{}'.format(filesystem_id))
 
 
-@app.route(r'/admin/filesystems/(\d+)')
+@app.route('/admin/filesystems/<int:filesystem_id>')
 def filesystem_page(filesystem_id):
     """Return the filesystem page."""
     b = BITStore(**PARAMS)
