@@ -7,10 +7,13 @@ import datetime
 import google.auth
 
 from bits.appengine import AppEngine
+# from bits.google.services.firestore import Firestore
+from bitstoreapiclient import BITStore
+
 from flask import Flask, render_template, redirect, request
 
-from bitstoreapiclient import BITStore
 from config import api, api_key, base_url
+
 
 todays_date = datetime.datetime.today()
 
@@ -94,32 +97,17 @@ def strftime_filter(s):
     """Jinja filter for strftime."""
     return datetime.datetime.strftime(s, "%Y-%m-%d")
 
-
-
-# class AdminPage(webapp2.RequestHandler):
-#    """Class for AdminPage."""
-
-#    def get(self):
-#        """Return the admin page."""
-#        template_values = {
-
-#        }
-#        template = jinja.get_template('admin.html')
-#        body = template.render(template_values)
-#        output = render_theme(body, self.request)
-#        self.response.write(output)
-
-
 @app.route('/admin/filesystems/<int:filesystem_id>/edit', methods=['GET', 'POST'])
 def filesystem_edit_page(filesystem_id):
-    """Function for FilesystemEditPage."""
+    """Flask parser for FilesystemEditPage."""
     b = BITStore(**PARAMS)
+    filesystem = b.get_filesystem(filesystem_id)
+    storageclasses = b.get_storageclasses()
+
 
     # Handle a GET
     if request.method == 'GET':
         """Return the filesystem edit page."""
-        filesystem = b.get_filesystem(filesystem_id)
-        storageclasses = b.get_storageclasses()
 
         body = render_template(
             'admin-filesystem.html',
