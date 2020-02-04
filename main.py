@@ -12,52 +12,41 @@ from bitstoreapiclient import BITStore
 
 from flask import Flask, render_template, redirect, request
 
-from config import api, api_key, base_url
+# from config import api, api_key, base_url
 
 
 todays_date = datetime.datetime.today()
 
-PARAMS = {
-    'api': api,
-    'api_key': api_key,
-    'base_url': base_url,
-}
-
 _, project = google.auth.default()
 
-DEBUG = True
+DEBUG = False
 
 debug_user = {
     'email': 'daltschu@broadinstitue.org',
     'id': '117063677019555687611',
 }
 
-# initialize the flask app
+# Initialize the flask app
 app = Flask(__name__)
 
+# Create an object called appengine from the bits-appengine module
 appengine = AppEngine(
     config_project=project,
     debug_user=debug_user,
     user_project=project,
 )
 
-# def is_dev():
-#     """Return true if this is the development environment."""
-#     dev = False
-#     if os.environ['SERVER_SOFTWARE'].startswith('Development'):
-#         dev = True
-#     return dev
+PARAMS = appengine.config().get_config('bitstore')
 
 # Render the main theme and then the body
 def render_theme(body):
     """Render the main template header and footer."""
+    user = appengine.user()
     return render_template(
         'theme.html',
-        # is_admin=users.is_current_user_admin(),
-        is_admin=True, # Change this later, for testing
-        # is_dev=is_dev(),
-        is_dev=True, # Change this later, for testing
-        body=body
+        body=body,
+        is_admin=user.is_admin(),
+        is_dev=user.is_dev()
     )
 
 

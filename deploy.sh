@@ -1,15 +1,11 @@
 #!/bin/bash
 
-APP="broad-bitstore-app"
-CONFIG="config-prod.py"
+PROJECT="broad-bitstore-app"
 if [ "$1" == 'dev' ]; then
-  APP="broad-bitstore-app-dev"
-  CONFIG='config-dev.py'
+  PROJECT="broad-bitstore-app-dev"
 elif [ "$1" == 'sandbox' ]; then
-  APP="broad-bitstore-app-sandbox"
-  CONFIG='config.py'
+  PROJECT="broad-bitstore-app-sandbox"
 fi
 
 # deploy app
-cp ${CONFIG} config.py
-gcloud -q app deploy --project ${APP}
+gcloud -q app deploy --project ${PROJECT}

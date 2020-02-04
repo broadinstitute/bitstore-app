@@ -1,5 +1,6 @@
-  
 #!/bin/bash
+
+export PATH=/opt/google-cloud-sdk/bin:$PATH
 
 APP='broad-bitstore-app'
 SERVICEACCOUNT='service_account_prod.json'
