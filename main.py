@@ -104,7 +104,6 @@ def filesystem_edit_page(filesystem_id):
     filesystem = b.get_filesystem(filesystem_id)
     storageclasses = b.get_storageclasses()
 
-
     # Handle a GET
     if request.method == 'GET':
         """Return the filesystem edit page."""
@@ -123,7 +122,7 @@ def filesystem_edit_page(filesystem_id):
     # Handle a POST
     if request.method == 'POST':
         # This handles updating a filesystem
-        post_data = dict(request.data)
+        post_data = dict(request.form)
         print('Initial Post Data: {}'.format(post_data))
 
         # check active
@@ -164,7 +163,7 @@ def filesystem_edit_page(filesystem_id):
             response = b.bitstore.filesystems().insert(body=filesystem).execute()
             # print(response)
 
-        redirect('/admin/filesystems/{}'.format(filesystem_id))
+        return redirect('/admin/filesystems/{}'.format(filesystem_id))
 
 
 @app.route('/admin/filesystems/<int:filesystem_id>')
@@ -192,7 +191,6 @@ def usage_page():
     """Return the usage page."""
     # Get passed in args
     date_time = request.args.get('date_time')
-
 
     b = BITStore(**PARAMS)
     filesystems = b.get_filesystems()
