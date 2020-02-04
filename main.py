@@ -41,14 +41,14 @@ appengine = AppEngine(
     user_project=project,
 )
 
-def is_dev():
-    """Return true if this is the development environment."""
-    dev = False
-    if os.environ['SERVER_SOFTWARE'].startswith('Development'):
-        dev = True
-    return dev
+# def is_dev():
+#     """Return true if this is the development environment."""
+#     dev = False
+#     if os.environ['SERVER_SOFTWARE'].startswith('Development'):
+#         dev = True
+#     return dev
 
-
+# Render the main theme and then the body
 def render_theme(body):
     """Render the main template header and footer."""
     return render_template(
@@ -60,6 +60,8 @@ def render_theme(body):
         body=body
     )
 
+
+# Shared functions
 def fs_list_to_dict(filesystems):
     """
     Convert a list of filesystem objects to a dict
@@ -70,6 +72,7 @@ def fs_list_to_dict(filesystems):
         fs_dict[fs['fs']] = fs
 
     return fs_dict
+
 
 def storage_class_list_to_dict(storage_classes):
     """
@@ -82,21 +85,27 @@ def storage_class_list_to_dict(storage_classes):
 
     return sc_dict
 
+
 def convert_to_tebi(bytes):
     """Convert from bytes to tebibytes (Meaning 1024^4)."""
     tebibytes_converted = round(((((float(bytes) / 1024) / 1024) / 1024) / 1024), 4)
     return tebibytes_converted
 
+
+# Jinja Custom Templates
 @app.template_filter('strptime')
 def strptime_filter(s):
     """Jinja filter for strptime."""
     return datetime.datetime.strptime(s, '%Y-%m-%d %H:%M:%S')
+
 
 @app.template_filter('strftime')
 def strftime_filter(s):
     """Jinja filter for strftime."""
     return datetime.datetime.strftime(s, "%Y-%m-%d")
 
+
+# Flask Page Routes
 @app.route('/admin/filesystems/<int:filesystem_id>/edit', methods=['GET', 'POST'])
 def filesystem_edit_page(filesystem_id):
     """Flask parser for FilesystemEditPage."""
@@ -159,7 +168,6 @@ def filesystem_edit_page(filesystem_id):
                     update = True
 
         if update:
-            # print(filesystem)
             response = b.bitstore.filesystems().insert(body=filesystem).execute()
             # print(response)
 
@@ -275,6 +283,7 @@ def usage_page():
     output = render_theme(body)
     return output
 
+
 @app.route('/usage-graphs')
 def usage_graph_page():
     """Return the graph page."""
@@ -336,7 +345,8 @@ def usage_graph_page():
 
     output = render_theme(body)
     return output
-    
+
+
 @app.route('/admin/filesystems')
 def admin_filesystems_page():
     """Return the main page."""
@@ -361,17 +371,6 @@ def admin_filesystems_page():
     output = render_theme(body)
     return output
 
-
-# @app.route('/')
-# def test_page():
-#     # print(PARAMS)
-#     b = BITStore(**PARAMS)
-
-#     print(b.base_url)
-
-#     print(b)
-
-#     return "blah"
 
 if __name__ == '__main__':
     from flask import send_file  # noqa
