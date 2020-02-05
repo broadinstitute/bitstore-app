@@ -1,7 +1,0 @@
-#!/usr/bin/env python
-"""Config settings for local dev environment."""
-
-api = 'bitstore-dev'
-api_key = 'MY_API_KEY'
-base_url = 'https://broad-bitstore-api-dev.appspot.com/_ah/api'
-debug = True
