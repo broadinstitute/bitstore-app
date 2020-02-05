@@ -1,18 +1,16 @@
 """BITStore App Main module."""
 
 import json
-import os
 import datetime
+
+import os
 
 import google.auth
 
 from bits.appengine import AppEngine
-# from bits.google.services.firestore import Firestore
 from bitstoreapiclient import BITStore
 
-from flask import Flask, render_template, redirect, request
-
-# from config import api, api_key, base_url
+from flask import Flask, render_template, redirect, request, abort
 
 
 todays_date = datetime.datetime.today()
@@ -24,6 +22,7 @@ DEBUG = False
 debug_user = {
     'email': 'daltschu@broadinstitue.org',
     'id': '117063677019555687611',
+    'admin': True
 }
 
 # Initialize the flask app
@@ -45,7 +44,7 @@ def render_theme(body):
     return render_template(
         'theme.html',
         body=body,
-        is_admin=user.is_admin(),
+        is_admin=user.admin,
         is_dev=user.is_dev()
     )
 
@@ -93,6 +92,9 @@ def strftime_filter(s):
     """Jinja filter for strftime."""
     return datetime.datetime.strftime(s, "%Y-%m-%d")
 
+# @app.errorhandler(403)
+# def unauthorized_boot():
+#     return 'Unauthorized!', 403
 
 # Flask Page Routes
 @app.route('/admin/filesystems/<int:filesystem_id>/edit', methods=['GET', 'POST'])
@@ -101,6 +103,12 @@ def filesystem_edit_page(filesystem_id):
     b = BITStore(**PARAMS)
     filesystem = b.get_filesystem(filesystem_id)
     storageclasses = b.get_storageclasses()
+    user = appengine.user()
+
+    # Check if user is admin, if not 403
+    if not user.admin:
+        # redirect(boot_if_not_admin())
+        abort(403)
 
     # Handle a GET
     if request.method == 'GET':
@@ -169,6 +177,13 @@ def filesystem_page(filesystem_id):
     b = BITStore(**PARAMS)
     filesystem = b.get_filesystem(filesystem_id)
     storageclasses = b.get_storageclasses()
+
+    user = appengine.user()
+
+    # Check if user is admin, if not 403
+    if not user.admin:
+        # redirect(boot_if_not_admin())
+        abort(403)
 
     body = render_template(
         'admin-filesystem.html',
@@ -341,6 +356,12 @@ def admin_filesystems_page():
     """Return the main page."""
     b = BITStore(**PARAMS)
     filesystems = b.get_filesystems()
+    user = appengine.user()
+
+    # Check if user is admin, if not 403
+    if not user.admin:
+        # redirect(boot_if_not_admin())
+        abort(403)
 
     servers = {}
     for f in filesystems:

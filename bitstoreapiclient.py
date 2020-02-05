@@ -152,7 +152,6 @@ class BITStore(Endpoints.Client):
     # BQ queries
     def query_historical_usage_bq(self, json_data, function):
         """Query BQ table for the chosen dates set of filesystem data."""
-
         # print(inspect(self.bitstore))
         headers = {
             'Content-Type': 'application/json',
