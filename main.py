@@ -293,6 +293,8 @@ def usage_graph_page():
 
     passed_fs = request.args.get('fs')
 
+    print(passed_fs)
+
     all_time_usage = b.get_fs_usage_all_time(fs=passed_fs)
 
     fs_usage_list = []

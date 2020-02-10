@@ -150,23 +150,23 @@ class BITStore(Endpoints.Client):
         # memcache.add('storageclasses', storageclasses, self.memcache_time)
         return storageclasses
 
-    # BQ queries
-    def query_historical_usage_bq(self, json_data, function):
-        """Query BQ table for the chosen dates set of filesystem data."""
-        # print(inspect(self.bitstore))
-        headers = {
-            'Content-Type': 'application/json',
-            'Authorization': 'bearer {}'.format(self.generate_id_token())
-        }
+    # # BQ queries
+    # def query_historical_usage_bq(self, json_data, function):
+    #     """Query BQ table for the chosen dates set of filesystem data."""
+    #     # print(inspect(self.bitstore))
+    #     headers = {
+    #         'Content-Type': 'application/json',
+    #         'Authorization': 'bearer {}'.format(self.generate_id_token())
+    #     }
 
-        # Assemble the headers and data into a HTTP request and run fetch
-        table_list = requests.post(
-            url=function,
-            headers=headers,
-            data=json.dumps(json_data),
-        ).content
+    #     # Assemble the headers and data into a HTTP request and run fetch
+    #     table_list = requests.post(
+    #         url=function,
+    #         headers=headers,
+    #         data=json.dumps(json_data),
+    #     ).content
 
-        return table_list
+    #     return table_list
 
     def get_fs_usages(self, datetime=None, select='*'):
         """Query BQ table for the chosen dates set of filesystem data."""
@@ -203,5 +203,5 @@ class BITStore(Endpoints.Client):
         ])
         bq = BigQuery(project='broad-bitstore-app')
         fs_usage = bq.get_query_results(query_string)
-        
+
         return fs_usage

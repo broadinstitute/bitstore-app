@@ -15,7 +15,7 @@
         var data = google.visualization.arrayToDataTable([
           ['DateTime', 'Quota Allocation', 'Total Usage', 'Share Usage', 'Overhead Usage', 'Snapshot Usage', 'DR Usage'],
           {% for f in fs_usage_sorted %}
-          [ '{{ f.get('datetime')[:19] | strptime }}', 
+          [ '{{ f.get('datetime').date() }}', 
             {{ f.get('quota_allocation') }}, 
             {{ f.get('total_usage') }}, 
             {{ f.get('share_usage') }}, 
