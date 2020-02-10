@@ -16,12 +16,13 @@ import requests
 # import google.auth
 # from bits.google import Google
 from bits.appengine.endpoints import Endpoints
+from bigquery import BigQuery
 
 
-def chunks(l, n):
-    """Yield successive n-sized chunks from l."""
-    for i in xrange(0, len(l), n):
-        yield l[i:i + n]
+# def chunks(l, n):
+#     """Yield successive n-sized chunks from l."""
+#     for i in xrange(0, len(l), n):
+#         yield l[i:i + n]
 
 
 class BITStore(Endpoints.Client):
@@ -169,26 +170,27 @@ class BITStore(Endpoints.Client):
         return table_list
 
     def get_fs_usages(self, datetime=None, select='*'):
-        # if datetime:
-        #     fs_usage = self.get_memcache_group('datetime')
-        # else:
-        #     fs_usage = self.get_memcache_group('fs_usage_latest')
-        # if fs_usage is not None:
-        #     return fs_usage
         if not datetime:
             datetime = '(select max(datetime) from broad_bitstore_app.bits_billing_byfs_bitstore_historical)'
-        data = {
-            'select': select,
-            'dataset': 'broad_bitstore_app',
-            'table_name': 'bits_billing_byfs_bitstore_historical',
-            'date_time': datetime
-        }
-        fs_usage = json.loads(self.query_historical_usage_bq(data, 'https://us-central1-broad-bitstore-app.cloudfunctions.net/QueryBQTableBitstore'))
+        dataset = 'broad_bitstore_app'
+        table_name = 'bits_billing_byfs_bitstore_historical'
+        query_string = ' '.join([
+            'select {SELECT}'.format(SELECT=select),
+            'from {DATASET}.{TABLE_NAME}'.format(DATASET=dataset, TABLE_NAME=table_name),
+            'where datetime = {DATE_TIME}'.format(DATE_TIME=datetime)
+        ])
+
+        # fs_usage = json.loads(self.query_historical_usage_bq(data, 'https://us-central1-broad-bitstore-app.cloudfunctions.net/QueryBQTableBitstore'))
         # if not datetime:
         #     self.save_memcache_group('fs_usage_latest', fs_usage, 'server')
         # else:
         #     self.save_memcache_group(datetime, fs_usage, 'server')
+
+        bq = BigQuery(project='broad-bitstore-app')
+        fs_usage = bq.get_query_results(query_string)
+
         return fs_usage
+
 
     def get_fs_usage_all_time(self, fs, select='*'):
         data = {

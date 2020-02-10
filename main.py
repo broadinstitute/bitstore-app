@@ -3,12 +3,11 @@
 import json
 import datetime
 
-import os
-
 import google.auth
 
 from bits.appengine import AppEngine
 from bitstoreapiclient import BITStore
+# from google.cloud import firestore
 
 from flask import Flask, render_template, redirect, request, abort
 
@@ -212,8 +211,6 @@ def usage_page():
     filesys_dict = fs_list_to_dict(filesystems)
     sc_dict = storage_class_list_to_dict(storageclasses)
 
-    date_time = request.args.get('date_time')
-
     if date_time:
         # Get the data from the supplied date string like 'yy-mm-dd'
         sql_datetime = '(select max(datetime) from broad_bitstore_app.bits_billing_byfs_bitstore_historical where DATE(datetime) = "{}" )'.format(date_time)
@@ -221,11 +218,12 @@ def usage_page():
     else:
         # Or else just get the latest usage data from BQ
         latest_usages = b.get_fs_usages()
-    # If date doesnt exist, kick person back up to latest date
-    if not latest_usages:
-        latest_usages = b.get_fs_usages()
+    # # If date doesnt exist, kick person back up to latest date
+    # if not latest_usages:
+    #     latest_usages = b.get_fs_usages()
 
-    latest_usage_date = latest_usages[1]['datetime'].split("+")[0]
+    # latest_usage_date = latest_usages[1]['datetime'].split("+")[0]
+    latest_usage_date = latest_usages[1]['datetime'].strftime('%Y-%m-%d %H:%M:%S')
 
     # Make the list of dicts into a dict of dicts with fs value as key
     by_fs = {}
