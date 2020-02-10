@@ -160,7 +160,6 @@ class BITStore(Endpoints.Client):
         }
 
         # Assemble the headers and data into a HTTP request and run fetch
-        
         table_list = requests.post(
             url=function,
             headers=headers,
@@ -170,6 +169,7 @@ class BITStore(Endpoints.Client):
         return table_list
 
     def get_fs_usages(self, datetime=None, select='*'):
+        """Query BQ table for the chosen dates set of filesystem data."""
         if not datetime:
             datetime = '(select max(datetime) from broad_bitstore_app.bits_billing_byfs_bitstore_historical)'
         dataset = 'broad_bitstore_app'
@@ -193,12 +193,15 @@ class BITStore(Endpoints.Client):
 
 
     def get_fs_usage_all_time(self, fs, select='*'):
-        data = {
-            'select': select,
-            'dataset': 'broad_bitstore_app',
-            'table_name': 'bits_billing_byfs_bitstore_historical',
-            'fs': fs
-        }
-        fs_usage = json.loads(self.query_historical_usage_bq(data, 'https://us-central1-broad-bitstore-app.cloudfunctions.net/QueryBQTableBitstoreHistorical'))
-
+        """Query BQ table for all historical usage of defined filesystem."""
+        dataset = 'broad_bitstore_app'
+        table_name = 'bits_billing_byfs_bitstore_historical'
+        query_string = ' '.join([
+            'select {SELECT}'.format(SELECT=select),
+            'from {DATASET}.{TABLE_NAME}'.format(DATASET=dataset, TABLE_NAME=table_name),
+            'where fs = "{fs}"'.format(fs=fs)
+        ])
+        bq = BigQuery(project='broad-bitstore-app')
+        fs_usage = bq.get_query_results(query_string)
+        
         return fs_usage

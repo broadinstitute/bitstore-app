@@ -16,7 +16,6 @@ class BigQuery():
 
     def submit_query(self, query_string):
         """Query a table with a query argument."""
-        
         query_job = self.bq.query(query_string)
 
         return query_job.result()
