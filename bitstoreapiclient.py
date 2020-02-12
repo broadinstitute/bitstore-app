@@ -1,29 +1,7 @@
 """BITStore API Client class file."""
-import json
-# import sys
-# import time
 
-# if sys.version_info >= (3, 0):
-#     from urllib.parse import urlencode
-# else:
-#     from urllib import urlencode
-
-# support for requests
-import requests
-# import requests_toolbelt.adapters.appengine
-# requests_toolbelt.adapters.appengine.monkeypatch()
-
-# import google.auth
-# from bits.google import Google
 from bits.appengine.endpoints import Endpoints
 from bigquery import BigQuery
-
-
-# def chunks(l, n):
-#     """Yield successive n-sized chunks from l."""
-#     for i in xrange(0, len(l), n):
-#         yield l[i:i + n]
-
 
 class BITStore(Endpoints.Client):
     """BITStore class."""

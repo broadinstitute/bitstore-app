@@ -2,10 +2,12 @@
 
 import json
 import datetime
+import time
 
 import google.auth
 
 from bits.appengine import AppEngine
+from bits.appengine.theme import Theme
 from bitstoreapiclient import BITStore
 # from google.cloud import firestore
 
@@ -37,15 +39,28 @@ appengine = AppEngine(
 PARAMS = appengine.config().get_config('bitstore')
 
 # Render the main theme and then the body
-def render_theme(body):
-    """Render the main template header and footer."""
-    user = appengine.user()
-    return render_template(
-        'theme.html',
-        body=body,
-        is_admin=user.admin,
-        is_dev=user.is_dev()
-    )
+# def render_theme(body):
+#     """Render the main template header and footer."""
+#     user = appengine.user()
+#     return render_template(
+#         'theme.html',
+#         body=body,
+#         is_admin=user.admin,
+#         is_dev=user.is_dev()
+#     )
+
+theme = Theme(
+    appengine=appengine,
+    app_name='Bitstore App',
+    links=[
+
+        {'name': 'Usage', 'url': '/'},
+        {'name': 'Admin Filesystems', 'url': '/admin/filesystems', 'admin': True},
+        # {'name': 'Admin', 'url': '/admin', 'admin': True},
+        {'name': 'Users', 'url': '/admin/users', 'admin': True},
+    ],
+    repo='bitstore-app',
+)
 
 
 # Shared functions
@@ -202,15 +217,25 @@ def usage_page():
     """Return the usage page."""
     # Get passed in args
     date_time = request.args.get('date_time')
-
+    tic1 = time.perf_counter()
     b = BITStore(**PARAMS)
+    toc1 = time.perf_counter()
+    tic2 = time.perf_counter()
     filesystems = b.get_filesystems()
+    toc2 = time.perf_counter()
+    tic3 = time.perf_counter()
     storageclasses = b.get_storageclasses()
+    toc3 = time.perf_counter()
+    
+    print(f"Time to get connection to firestore {toc1 - tic1:0.4f} seconds")
+    print(f"Time to query db for filesystems {toc2 - tic2:0.4f} seconds")
+    print(f"Time to query database for storage classes {toc3 - tic3:0.4f} seconds")
 
     # Assemble the filesystem and storage class lists into dicts
     filesys_dict = fs_list_to_dict(filesystems)
     sc_dict = storage_class_list_to_dict(storageclasses)
 
+    
     if date_time:
         # Get the data from the supplied date string like 'yy-mm-dd'
         sql_datetime = '(select max(datetime) from broad_bitstore_app.bits_billing_byfs_bitstore_historical where DATE(datetime) = "{}" )'.format(date_time)
@@ -218,6 +243,7 @@ def usage_page():
     else:
         # Or else just get the latest usage data from BQ
         latest_usages = b.get_fs_usages()
+
     # # If date doesnt exist, kick person back up to latest date
     # if not latest_usages:
     #     latest_usages = b.get_fs_usages()
