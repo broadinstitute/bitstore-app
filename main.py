@@ -18,7 +18,7 @@ todays_date = datetime.datetime.today()
 
 _, project = google.auth.default()
 
-DEBUG = True
+DEBUG = False
 
 debug_user = {
     'email': 'daltschu@broadinstitue.org',
@@ -38,17 +38,6 @@ appengine = AppEngine(
 
 PARAMS = appengine.config().get_config('bitstore')
 
-# Render the main theme and then the body
-# def render_theme(body):
-#     """Render the main template header and footer."""
-#     user = appengine.user()
-#     return render_template(
-#         'theme.html',
-#         body=body,
-#         is_admin=user.admin,
-#         is_dev=user.is_dev()
-#     )
-
 def extended_footer():
     """Render the extended footer for the main template."""
     with app.app_context():
@@ -62,7 +51,6 @@ theme = Theme(
 
         {'name': 'Usage', 'url': '/'},
         {'name': 'Admin Filesystems', 'url': '/admin/filesystems', 'admin': True},
-        # {'name': 'Admin', 'url': '/admin', 'admin': True},
         {'name': 'Users', 'url': '/admin/users', 'admin': True},
     ],
     repo='bitstore-app',
