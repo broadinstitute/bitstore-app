@@ -18,7 +18,7 @@ todays_date = datetime.datetime.today()
 
 _, project = google.auth.default()
 
-DEBUG = False
+DEBUG = True
 
 debug_user = {
     'email': 'daltschu@broadinstitue.org',
@@ -49,6 +49,12 @@ PARAMS = appengine.config().get_config('bitstore')
 #         is_dev=user.is_dev()
 #     )
 
+def extended_footer():
+    """Render the extended footer for the main template."""
+    with app.app_context():
+        body = render_template('extended-footer.html')
+        return body
+
 theme = Theme(
     appengine=appengine,
     app_name='Bitstore App',
@@ -60,6 +66,8 @@ theme = Theme(
         {'name': 'Users', 'url': '/admin/users', 'admin': True},
     ],
     repo='bitstore-app',
+    body_class="container-fluid",
+    extended_footer=extended_footer()
 )
 
 
@@ -136,7 +144,7 @@ def filesystem_edit_page(filesystem_id):
             json=json.dumps(filesystem, indent=2, sort_keys=True),
             storageclasses=sorted(storageclasses, key=lambda x: x['name']),
         )
-        output = render_theme(body)
+        output = theme.render_theme(body)
         return output
 
     # Handle a POST
@@ -208,7 +216,7 @@ def filesystem_page(filesystem_id):
         storageclasses=sorted(storageclasses, key=lambda x: x['name']),
     )
 
-    output = render_theme(body)
+    output = theme.render_theme(body)
     return output
 
 
@@ -308,7 +316,7 @@ def usage_page():
         available_dates=available_dates
     )
 
-    output = render_theme(body)
+    output = theme.render_theme(body)
     return output
 
 
@@ -373,7 +381,7 @@ def usage_graph_page():
         fs_usage_sorted=all_time_usage_sorted_by_date
     )
 
-    output = render_theme(body)
+    output = theme.render_theme(body)
     return output
 
 
@@ -404,8 +412,41 @@ def admin_filesystems_page():
         servers=servers,
     )
         
-    output = render_theme(body)
+    output = theme.render_theme(body)
     return output
+
+@app.route('/admin/users')
+def admin_users():
+    """Return the admin users page."""
+    # view the users list
+    return theme.admin_users_page(page_name='Users')
+
+
+@app.route('/admin/users/add', methods=['GET', 'POST'])
+def admin_users_add():
+    """Return the admin users add page."""
+    # view the add user page
+    if request.method == 'GET':
+        return theme.admin_users_add_page(page_name='Add User')
+    # add a new user
+    elif request.method == 'POST':
+        return theme.admin_users_add_user()
+
+
+@app.route('/admin/users/<uid>', methods=['GET', 'POST'])
+def admin_users_edit(uid):
+    """Return the admin users edit page."""
+    # delete a user
+    if request.method == 'GET':
+        return theme.admin_users_edit_page(uid, page_name='Edit User {}'.format(uid))
+    elif request.method == 'POST':
+        return theme.admin_users_edit_user(uid)
+
+
+@app.route('/admin/users/<uid>/delete')
+def admin_users_delete(uid):
+    """Return the admin users delete page."""
+    return theme.admin_users_delete(uid)
 
 
 if __name__ == '__main__':
@@ -421,4 +462,4 @@ if __name__ == '__main__':
         """Return styles.css."""
         return send_file('styles.css', mimetype='text/css')
 
-    app.run(host='0.0.0.0', port=8080, debug=DEBUG)
+    app.run(host='0.0.0.0', port=8085, debug=DEBUG)

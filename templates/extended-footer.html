@@ -1,0 +1,56 @@
+<script src="https://cdn.jsdelivr.net/gh/gitbrent/bootstrap4-toggle@3.4.0/js/bootstrap4-toggle.min.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/numeral.js/2.0.6/numeral.min.js"></script> 
+  
+
+
+  <script>
+  $(document).ready(function () {
+    $('#UsageTable').DataTable( 
+        {
+            fixedHeader: true,
+            pageLength: 50,
+            lengthMenu: [ 10, 50, 100, 150, 200, 250 ],
+            columnDefs: [
+                {   
+                    "targets": [ 4, 6, 7, 8, 9, 11 ],
+                    "render": function ( data ) {
+                        var bytes = numeral(data).value()
+
+                        if (isNaN(bytes)) { return 0 }
+
+                        return toTiB(bytes)
+                    }
+                }
+            ],
+            dom: '<"row col align-self-start"B><"row col justify-content-between"lf>rtip',
+            buttons: [
+                {
+                    extend: 'csvHtml5',
+                    text: 'Export to CSV'
+                }
+            ]
+        }
+    );
+  });
+  </script>
+
+  <script>
+  $(document).ready(function () {
+    $('#FSTable').DataTable( 
+        {
+            pageLength: 100,
+            lengthMenu: [ 10, 50, 100, 150, 200, 250 ]
+        }
+    );
+  } );
+  </script>
+
+  <script>
+  function toTiB(bytes){
+      return (((((bytes) / 1024) / 1024) / 1024) / 1024).toFixed(2)
+  }
+  </script>
+
+</body>
+
+</html>
