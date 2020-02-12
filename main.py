@@ -18,7 +18,7 @@ todays_date = datetime.datetime.today()
 
 _, project = google.auth.default()
 
-DEBUG = True
+DEBUG = False
 
 debug_user = {
     'email': 'daltschu@broadinstitue.org',
@@ -451,4 +451,4 @@ if __name__ == '__main__':
         """Return styles.css."""
         return send_file('styles.css', mimetype='text/css')
 
-    app.run(host='0.0.0.0', port=8085, debug=DEBUG)
+    app.run(host='0.0.0.0', port=8080, debug=DEBUG)
