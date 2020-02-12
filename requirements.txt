@@ -1,5 +1,5 @@
 google-api-python-client
-bits-appengine
+bits-appengine>=1.1.16
 bits-google
 pycrypto==2.6.1
 oauth2client
