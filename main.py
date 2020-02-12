@@ -18,7 +18,7 @@ todays_date = datetime.datetime.today()
 
 _, project = google.auth.default()
 
-DEBUG = False
+DEBUG = True
 
 debug_user = {
     'email': 'daltschu@broadinstitue.org',
@@ -55,7 +55,8 @@ theme = Theme(
     ],
     repo='bitstore-app',
     body_class="container-fluid",
-    extended_footer=extended_footer()
+    extended_footer=extended_footer(),
+    topnav_padding=True
 )
 
 
