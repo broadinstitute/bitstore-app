@@ -11,7 +11,7 @@ class BITStore(Endpoints.Client):
         api_key=None,
         base_url='http://localhost:8080',
         # base_url='https://broad-bitstore-api-dev.appspot.com',
-        api='bitstore-dev',
+        api='bitstore',
         version='v1',
         verbose=False,
     ):

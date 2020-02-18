@@ -1,6 +1,6 @@
 #!/bin/bash
 
-PROJECT="broad-bitstore-app"
+PROJECT="broad-bitstore-app-prod"
 if [ "$1" == 'dev' ]; then
   PROJECT="broad-bitstore-app-dev"
 elif [ "$1" == 'sandbox' ]; then
