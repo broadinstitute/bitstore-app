@@ -16,7 +16,8 @@ from flask import Flask, render_template, redirect, request, abort
 
 todays_date = datetime.datetime.today()
 
-_, project = google.auth.default()
+# _, project = google.auth.default()
+project = "broad-bitstore-app"
 
 DEBUG = False
 
@@ -51,7 +52,7 @@ theme = Theme(
 
         {'name': 'Usage', 'url': '/'},
         {'name': 'Admin Filesystems', 'url': '/admin/filesystems', 'admin': True},
-        {'name': 'Users', 'url': '/admin/users', 'admin': True},
+        {'name': 'Admin Users', 'url': '/admin/users', 'admin': True},
     ],
     repo='bitstore-app',
     body_class="container-fluid",

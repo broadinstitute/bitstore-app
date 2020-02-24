@@ -13,7 +13,7 @@
 
       function drawChart() {
         var data = google.visualization.arrayToDataTable([
-          ['DateTime', 'Quota Allocation', 'Total Usage', 'Share Usage', 'Overhead Usage', 'Snapshot Usage', 'DR Usage'],
+          ['DateTime', 'Quota Allocation', 'Total Usage', 'Share Usage', 'Protection / Parity', 'Snapshot Usage', 'DR Usage'],
           {% for f in fs_usage_sorted %}
           [ '{{ f.get('datetime').date() }}', 
             {{ f.get('quota_allocation') }}, 
