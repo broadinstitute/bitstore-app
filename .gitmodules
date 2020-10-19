@@ -1,0 +1,3 @@
+[submodule "bitsdb-api-python-client"]
+	path = bitsdb-api-python-client
+	url = git@github.com:broadinstitute/bitsdb-api-python-client
