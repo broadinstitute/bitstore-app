@@ -27,3 +27,30 @@ resource "google_cloudbuild_trigger" "build-docker-image" {
     ]
   }
 }
+
+resource "google_cloudbuild_trigger" "deploy-app-trigger" {
+  provider       = google-beta
+  name           = "deploy-app"
+  description    = "Deploy App"
+  filename       = "cloudbuild.yaml"
+  project        = var.project_id
+
+  included_files = [
+    # "app/**",
+  ]
+
+  ignored_files = [
+    # "app/*.md",
+    # "app/*.sh",
+  ]
+
+  github {
+    name     = "bitstore-app"
+    owner    = "broadinstitute"
+    push {
+      branch = "^${var.branch}$"
+    }
+  }
+
+}
+
