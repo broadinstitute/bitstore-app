@@ -2,7 +2,7 @@
 steps:
   - id: deploy-app
     name: gcr.io/google.com/cloudsdktool/cloud-sdk:alpine
-    dir: app
+    # dir: app
     entrypoint: gcloud
     args:
       - app
