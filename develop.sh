@@ -12,10 +12,14 @@ elif [ "$1" == "sandbox" ]; then
   SERVICEACCOUNT="service_account_sandbox.json"
 fi
 
-IMAGE="gcr.io/${APP}/bitstore-app:latest"
+IMAGE="${IMAGE:-"gcr.io/${APP}/bitstore-app:latest"}"
 
 # pull the newest image
-docker pull "${IMAGE}"
+case "${IMAGE}" in
+  *gcr.io*)
+    docker pull "${IMAGE}"
+    ;;
+esac
 
 # run the container
 docker run -it --rm \
