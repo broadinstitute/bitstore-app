@@ -1,7 +1,9 @@
 """BITStore App Main module."""
 
-import json
 import datetime
+import json
+from operator import ne
+import os
 import time
 
 import google.auth
@@ -12,14 +14,9 @@ from bitstoreapiclient import BITStore
 
 from flask import Flask, render_template, redirect, request, abort
 
-
-# Release: 1.5.5
-
 todays_date = datetime.datetime.today()
 
-# _, project = google.auth.default()
-project = "broad-bitstore-app" # Change this later when firestore is the norm.
-
+PROJECT = os.environ.get("GOOGLE_CLOUD_PROJECT")
 DEBUG = False
 
 debug_user = {
@@ -33,18 +30,22 @@ app = Flask(__name__)
 
 # Create an object called appengine from the bits-appengine module
 appengine = AppEngine(
-    config_project=project,
+    config_database="firestore",
+    config_project=PROJECT,
     debug_user=debug_user,
-    user_project=project,
+    user_project=PROJECT,
 )
 
+
 PARAMS = appengine.config().get_config('bitstore')
+
 
 def extended_footer():
     """Render the extended footer for the main template."""
     with app.app_context():
         body = render_template('extended-footer.html')
         return body
+
 
 theme = Theme(
     appengine=appengine,
@@ -225,7 +226,7 @@ def usage_page():
     tic3 = time.perf_counter()
     storageclasses = b.get_storageclasses()
     toc3 = time.perf_counter()
-    
+
     print(f"Time to get connection to firestore {toc1 - tic1:0.4f} seconds")
     print(f"Time to query db for filesystems {toc2 - tic2:0.4f} seconds")
     print(f"Time to query database for storage classes {toc3 - tic3:0.4f} seconds")
@@ -234,7 +235,7 @@ def usage_page():
     filesys_dict = fs_list_to_dict(filesystems)
     sc_dict = storage_class_list_to_dict(storageclasses)
 
-    
+
     if date_time:
         # Get the data from the supplied date string like 'yy-mm-dd'
         sql_datetime = '(select max(datetime) from broad_bitstore_app.bits_billing_byfs_bitstore_historical where DATE(datetime) = "{}" )'.format(date_time)
@@ -346,11 +347,11 @@ def usage_graph_page():
         dr_byte_usage = usage.get('dr_byte_usage', 0)
         if not dr_byte_usage:
             dr_byte_usage = 0
-            
+
         snapshot_byte_usage = usage.get('snapshot_byte_usage', 0)
         if not snapshot_byte_usage:
             snapshot_byte_usage = 0
-            
+
         quota_allocation = usage.get('quota_allocation', 0)
         if not quota_allocation:
             quota_allocation = 0
@@ -402,7 +403,7 @@ def admin_filesystems_page():
         filesystems=filesystems,
         servers=servers,
     )
-        
+
     output = theme.render_theme(body)
     return output
 
