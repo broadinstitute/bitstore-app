@@ -17,6 +17,7 @@ resource "google_project" "project" {
 resource "google_project_service" "services" {
   for_each = toset([
     "appengine.googleapis.com",
+    "cloudbuild.googleapis.com",
     "firestore.googleapis.com",
   ])
   project = google_project.project.project_id
@@ -24,4 +25,15 @@ resource "google_project_service" "services" {
 
   disable_dependent_services = true
   disable_on_destroy = true
+}
+
+resource "google_project_iam_member" "cloudbuild" {
+  for_each = toset([
+    "roles/appengine.appAdmin",
+    "roles/cloudbuild.builds.builder",
+    "roles/iam.serviceAccountUser",
+  ])
+  project = google_project_service.services["cloudbuild.googleapis.com"].project
+  role    = each.key
+  member  = "serviceAccount:${google_project.project.number}@cloudbuild.gserviceaccount.com"
 }
