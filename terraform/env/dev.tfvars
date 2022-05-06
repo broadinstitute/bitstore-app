@@ -1,4 +1,8 @@
+billing_account = "00A539-93294F-AC9B6F"
 branch = "develop"
+costobject = "1550167"
 env = "dev"
+folder_id = "244076663523"
 project_id = "broad-bitstore-app-dev"
+project_name = "BITStore App - Development"
 repo = "bitstore-app"
