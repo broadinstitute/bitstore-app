@@ -108,3 +108,4 @@ tmp/
 config*.py
 core
 etc/
+planfile
