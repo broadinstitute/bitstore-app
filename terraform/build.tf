@@ -1,3 +1,5 @@
+# Sets up all resources related to CloudBuild
+
 resource "google_cloudbuild_trigger" "build-docker-image" {
   provider    = google-beta
   name        = "build-docker-image"
