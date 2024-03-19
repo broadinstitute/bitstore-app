@@ -15,11 +15,11 @@
         var data = google.visualization.arrayToDataTable([
           ['DateTime', 'Quota Allocation', 'Total Usage', 'Share Usage', 'Protection / Parity', 'Snapshot Usage', 'DR Usage'],
           {% for f in fs_usage_sorted %}
-          [ '{{ f.get('datetime').date() }}', 
-            {{ f.get('quota_allocation') }}, 
-            {{ f.get('total_usage') }}, 
-            {{ f.get('share_usage') }}, 
-            {{ f.get('overhead_usage') }}, 
+          [ '{{ f.get('datetime').date() }}',
+            {{ f.get('quota_allocation') }},
+            {{ f.get('total_usage') }},
+            {{ f.get('share_usage') }},
+            {{ f.get('overhead_usage') }},
             {{ f.get('snapshot_byte_usage') }},
             {{ f.get('dr_usage') }}
           ],
@@ -27,7 +27,7 @@
         ]);
 
         var options = {
-            title:'{{ fs_name }}', 
+            title:'{{ fs_name }}',
             hAxis: {title: 'Date', titleTextStyle: {bold: 1, fontSize: 20}},
             vAxis: {title: 'TiB', titleTextStyle: {bold: 1, fontSize: 20}}
         };

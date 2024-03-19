@@ -1,0 +1,12 @@
+---
+extends: default
+ignore: |
+  .venv/
+rules:
+  comments-indentation: disable
+  indentation:
+    indent-sequences: whatever
+    spaces: 2
+  line-length:
+    level: warning
+    max: 150

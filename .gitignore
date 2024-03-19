@@ -104,6 +104,7 @@ ENV/
 
 *.p12
 *.pem
+.ruff_cache/*
 tmp/
 config*.py
 core

@@ -1,0 +1,7 @@
+.github/*
+.ruff_cache/*
+tmp/*
+terraform/*
+images/*
+.[a-z]*
+*.sh

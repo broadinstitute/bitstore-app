@@ -1,14 +1,14 @@
-
-runtime: python37
+---
+runtime: python39
 
 handlers:
-- url: /images
-  static_dir: images
+  - url: /images
+    static_dir: images
 
-- url: /favicon\.ico
-  static_files: favicon.ico
-  upload: favicon\.ico
+  - url: /favicon\.ico
+    static_files: favicon.ico
+    upload: favicon\.ico
 
-- url: /styles\.css
-  static_files: styles.css
-  upload: styles\.css
+  - url: /styles\.css
+    static_files: styles.css
+    upload: styles\.css

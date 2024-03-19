@@ -1,12 +1,9 @@
 """BITStore App Main module."""
-
 import datetime
 import json
-from operator import ne
 import os
 import time
 
-import google.auth
 
 from bits.appengine import AppEngine
 from bits.appengine.theme import Theme
@@ -179,8 +176,7 @@ def filesystem_edit_page(filesystem_id):
                     update = True
 
         if update:
-            response = b.bitstore.filesystems().insert(body=filesystem).execute()
-            # print(response)
+            b.bitstore.filesystems().insert(body=filesystem).execute()
 
         return redirect('/admin/filesystems/{}'.format(filesystem_id))
 

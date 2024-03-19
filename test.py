@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 from bigquery import BigQuery
 import google.auth
 

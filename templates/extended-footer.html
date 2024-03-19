@@ -1,6 +1,6 @@
 <script src="https://cdn.jsdelivr.net/gh/gitbrent/bootstrap4-toggle@3.4.0/js/bootstrap4-toggle.min.js"></script>
-<script src="//cdnjs.cloudflare.com/ajax/libs/numeral.js/2.0.6/numeral.min.js"></script> 
-  
+<script src="//cdnjs.cloudflare.com/ajax/libs/numeral.js/2.0.6/numeral.min.js"></script>
+
 <!-- DataTable stuff -->
 <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/v/dt/dt-1.10.18/b-1.5.6/b-html5-1.5.6/fh-3.1.4/r-2.2.2/datatables.min.css"/>
 <script type="text/javascript" src="https://cdn.datatables.net/v/dt/dt-1.10.18/b-1.5.6/b-html5-1.5.6/fh-3.1.4/r-2.2.2/datatables.min.js"></script>
@@ -8,13 +8,13 @@
 
   <script>
   $(document).ready(function () {
-    $('#UsageTable').DataTable( 
+    $('#UsageTable').DataTable(
         {
             fixedHeader: true,
             pageLength: 50,
             lengthMenu: [ 10, 50, 100, 150, 200, 250 ],
             columnDefs: [
-                {   
+                {
                     "targets": [ 4, 6, 7, 8, 9, 11 ],
                     "render": function ( data ) {
                         var bytes = numeral(data).value()
@@ -39,7 +39,7 @@
 
   <script>
   $(document).ready(function () {
-    $('#FSTable').DataTable( 
+    $('#FSTable').DataTable(
         {
             pageLength: 100,
             lengthMenu: [ 10, 50, 100, 150, 200, 250 ]
