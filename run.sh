@@ -1,6 +1,6 @@
 #!/bin/bash
 
-CONTAINER_IMAGE='hashicorp/terraform:latest'
+CONTAINER_IMAGE='alpine/terragrunt:latest'
 SUDO=
 
 SCRIPT_DIR="$( cd -P "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
@@ -30,10 +30,9 @@ if [ -d "${HOME}/.config/gcloud" ]; then
     GCLOUD_MOUNT=( -v "${HOME}/.config/gcloud:/root/.config/gcloud" )
 fi
 
-$SUDO $CONTAINER_APP pull "$CONTAINER_IMAGE" >&2
+$SUDO "$CONTAINER_APP" pull "$CONTAINER_IMAGE" \
 
-$SUDO $CONTAINER_APP run "${TTY[@]}" \
+$SUDO "$CONTAINER_APP" run "${TTY[@]}" \
     --rm \
-    -w /data/terraform \
-    "${GCLOUD_MOUNT[@]}" -v "${SCRIPT_DIR}:/data" \
+    "${GCLOUD_MOUNT[@]}" -v "${SCRIPT_DIR}:/apps" \
     "$CONTAINER_IMAGE" "$@"

@@ -19,3 +19,12 @@ updates:
     schedule:
       # Check for updates to GitHub Actions every week
       interval: 'weekly'
+  - package-ecosystem: 'terraform'
+    directory: '/'
+    groups:
+      terraform:
+        patterns:
+          - '*'
+    schedule:
+      # Check for updates to Terraform every week
+      interval: 'weekly'
