@@ -1,3 +1,4 @@
+---
 apiVersion: backstage.io/v1alpha1
 kind: Component
 metadata:
@@ -16,4 +17,23 @@ metadata:
 spec:
   type: website
   lifecycle: production
+  owner: devnull
+---
+apiVersion: backstage.io/v1alpha1
+kind: System
+metadata:
+  name: bitstore
+  title: BITS Store
+  description: |
+    BITS Store
+  links:
+    - url: https://bitstore.broadinstitute.org
+      title: BITStore
+      icon: dashboard
+  tags:
+    - bits
+    - bits-tools
+  annotations:
+    github.com/project-slug: broadinstitute/bitstore-app
+spec:
   owner: devnull
