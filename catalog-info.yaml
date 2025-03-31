@@ -1,0 +1,19 @@
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: bitstore-app
+  description: BITStore AppEngine App
+  tags:
+    - python
+    - bitstore
+  annotations:
+    github.com/project-slug: broadinstitute/bitstore-app
+    backstage.io/source-template: template:default/open-pr-with-catalog-entry
+  links:
+    - url: https://bitstore.broadinstitute.org/
+      title: BITStore
+      icon: dashboard
+spec:
+  type: website
+  lifecycle: production
+  owner: devnull
