@@ -17,7 +17,7 @@ metadata:
 spec:
   type: website
   lifecycle: production
-  owner: devnull
+  owner: bits-aviso
 ---
 apiVersion: backstage.io/v1alpha1
 kind: System
@@ -36,4 +36,4 @@ metadata:
   annotations:
     github.com/project-slug: broadinstitute/bitstore-app
 spec:
-  owner: devnull
+  owner: bits-aviso
