@@ -18,6 +18,7 @@ spec:
   type: website
   lifecycle: production
   owner: bits-aviso
+  system: bitstore
 ---
 apiVersion: backstage.io/v1alpha1
 kind: System
@@ -37,3 +38,4 @@ metadata:
     github.com/project-slug: broadinstitute/bitstore-app
 spec:
   owner: bits-aviso
+  domain: finops
